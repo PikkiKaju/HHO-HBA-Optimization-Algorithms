@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using static HoneyBadgerAlgorithm;
 
 class HoneyBadgerAlgorithm : IOptimizationAlgorithm
 {
@@ -46,6 +47,7 @@ class HoneyBadgerAlgorithm : IOptimizationAlgorithm
         this.Dimension = dimension;
         this.beta = beta;
         this.C = C;
+        this.XBest = new double[dimension];
     }
 
     // HoneyBadgerAlgorithm algorithm

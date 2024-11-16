@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
+using Zastosowania_Sztucznej_Inteligencji.HelperClasses;
 
 
 public class RunAlgorithms
 {   
-    public static void Main(string[] args)
+    public static void Run()
     {
         // Define population and iteration values
         int[] populationSizes = { 10, 20, 40, 80 };
         int[] iterations = { 5, 10, 20, 40, 60, 80 };
-        int dimension = 30;
+        int dimension = 3;
 
         // Initialize algorithms from HBA.cs and any other provided algorithms
         List<IOptimizationAlgorithm> algorithms = new List<IOptimizationAlgorithm>
@@ -34,7 +36,7 @@ public class RunAlgorithms
         }
     }
 
-    private static void RunAlgorithmTests(IOptimizationAlgorithm algorithm, TestFunctions.FunctionInfo function, int populationSize, int maxIterations, int dimension)
+    private static TestResults RunAlgorithmTests(IOptimizationAlgorithm algorithm, TestFunctions.FunctionInfo function, int populationSize, int maxIterations, int dimension)
     {
         List<double> results = new List<double>();
         for (int i = 0; i < 10; i++)  // Run 10 times to evaluate stability
@@ -43,20 +45,35 @@ public class RunAlgorithms
             results.Add(result);
         }
 
-        AnalyzeAndPrintResults(results, algorithm.Name, function, populationSize, maxIterations);
+        return AnalyzeAndPrintResults(results, algorithm, function, populationSize, maxIterations, false);
     }
 
-    private static void AnalyzeAndPrintResults(List<double> results, string algorithmName, TestFunctions.FunctionInfo function, int populationSize, int maxIterations)
+    private static TestResults AnalyzeAndPrintResults(List<double> results, IOptimizationAlgorithm algorithm, TestFunctions.FunctionInfo function, int populationSize, int maxIterations, bool print = false)
     {
         double mean = CalculateMean(results);
         double stdDev = CalculateStandardDeviation(results, mean);
         double coefficientOfVariation = (stdDev / mean) * 100;
 
-        Console.WriteLine($"Algorithm: {algorithmName}, Pop Size: {populationSize}, Iterations: {maxIterations}");
-        Console.WriteLine($"Function: {function.Name}, Domain: [{function.MinX} ; {function.MaxX}], GlobalMin: {function.GlobalMin}");
-        Console.WriteLine($"Mean: {mean}, Std Dev: {stdDev}, Coefficient of Variation: {coefficientOfVariation}%");
-        Console.WriteLine($"Best: {results.Min()}, Worst: {results.Max()}");
-        Console.WriteLine("--------------------------------------------------");
+        if (print)
+        {
+            Console.WriteLine($"Algorithm: {algorithm.Name}, Pop Size: {populationSize}, Iterations: {maxIterations}");
+            Console.WriteLine($"Function: {function.Name}, Domain: [{function.MinX} ; {function.MaxX}], GlobalMin: {function.GlobalMin}");
+            Console.WriteLine($"Mean: {mean}, Std Dev: {stdDev}, Coefficient of Variation: {coefficientOfVariation}%");
+            Console.WriteLine($"Best: {results.Min()}, Worst: {results.Max()}");
+            Console.WriteLine("--------------------------------------------------");
+        }
+
+        return new TestResults
+        {
+            Algorithm = algorithm,
+            Function = function,
+            PopulationSize = populationSize,
+            Iterations = maxIterations,
+            Result = results.Min(),
+            Mean = mean,
+            StandardDeviation = stdDev,
+            CoefficientOfVariation = coefficientOfVariation
+        };
     }
 
     private static double CalculateMean(List<double> values)

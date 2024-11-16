@@ -6,11 +6,11 @@ class TestFunctions {
     // Class for storring function info
     public class FunctionInfo
     {
-        public string Name { get; set; }
-        public double MinX { get; set; }
-        public double MaxX { get; set; }
-        public int GlobalMin { get; set; }
-        public Func<double[], double> Function { get; set; }
+        public required string Name { get; set; }
+        public required double MinX { get; set; }
+        public required double MaxX { get; set; }
+        public required int GlobalMin { get; set; }
+        public required Func<double[], double> Function { get; set; }
     }
 
     // A list of test functions' info and the functions themselves

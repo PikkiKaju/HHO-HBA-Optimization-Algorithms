@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "P8V0euprT8s=",
+  "dgSpecHash": "7Qc84NsgrUk=",
   "success": true,
   "projectFilePath": "C:\\.Projects\\.Visual_Studio_cs_projects\\Zastosowania-Sztucznej-Inteligencji\\Zastosowania-Sztucznej-Inteligencji.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\igorz\\.nuget\\packages\\mathnet.numerics\\5.0.0\\mathnet.numerics.5.0.0.nupkg.sha512"
+  ],
   "logs": []
 }

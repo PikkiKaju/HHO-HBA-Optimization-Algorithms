@@ -1,3 +1,5 @@
+
+
 namespace Zastosowania_Sztucznej_Inteligencji
 {
     internal static class Program

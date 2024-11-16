@@ -39,6 +39,7 @@ public class HarrisHawksOptimization : IOptimizationAlgorithm
         this.PopulationSize = populationSize;
         this.MaxIterations = maxIterations;
         this.Dimension = dimension;
+        this.XBest = new double[dimension];
     }
 
     // HarrisHawksOptimization algorithm
