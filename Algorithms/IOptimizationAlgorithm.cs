@@ -12,7 +12,7 @@ public interface IOptimizationAlgorithm
     // W przeciwnym razie zaczyna obliczenia od początku.
     // Zwraca wartość funkcji celu dla znalezionego rozwiązania
     // (najlepszego osobnika)
-    double Solve(Func<double[], double> function, int populationSize, int maxIterations, int dimension);
+    double Solve(FitnessFunction function, int populationSize, int maxIterations, int dimension);
 
     // Właściwość zwracająca tablicę z najlepszym osobnikiem
     double[] XBest { get; set; }

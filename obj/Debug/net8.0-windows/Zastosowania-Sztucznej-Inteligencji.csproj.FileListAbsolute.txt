@@ -1,4 +1,3 @@
-C:\.Projects\.Visual_Studio_cs_projects\Zastosowania-Sztucznej-Inteligencji\obj\Debug\net8.0-windows\Zastosowania_Sztucznej_Inteligencji.Form1.resources
 C:\.Projects\.Visual_Studio_cs_projects\Zastosowania-Sztucznej-Inteligencji\obj\Debug\net8.0-windows\Zastosowania-Sztucznej-Inteligencji.csproj.GenerateResource.cache
 C:\.Projects\.Visual_Studio_cs_projects\Zastosowania-Sztucznej-Inteligencji\obj\Debug\net8.0-windows\Zastosowania-Sztucznej-Inteligencji.GeneratedMSBuildEditorConfig.editorconfig
 C:\.Projects\.Visual_Studio_cs_projects\Zastosowania-Sztucznej-Inteligencji\obj\Debug\net8.0-windows\Zastosowania-Sztucznej-Inteligencji.AssemblyInfoInputs.cache
@@ -18,3 +17,10 @@ C:\.Projects\.Visual_Studio_cs_projects\Zastosowania-Sztucznej-Inteligencji\obj\
 C:\.Projects\.Visual_Studio_cs_projects\Zastosowania-Sztucznej-Inteligencji\obj\Debug\net8.0-windows\Zastosowania-Sztucznej-Inteligencji.pdb
 C:\.Projects\.Visual_Studio_cs_projects\Zastosowania-Sztucznej-Inteligencji\obj\Debug\net8.0-windows\Zastosowania-Sztucznej-Inteligencji.genruntimeconfig.cache
 C:\.Projects\.Visual_Studio_cs_projects\Zastosowania-Sztucznej-Inteligencji\obj\Debug\net8.0-windows\ref\Zastosowania-Sztucznej-Inteligencji.dll
+C:\.Projects\.Visual_Studio_cs_projects\Zastosowania-Sztucznej-Inteligencji\obj\Debug\net8.0-windows\Zastosowania_Sztucznej_Inteligencji.MainForm.resources
+C:\.Projects\.Visual_Studio_cs_projects\Zastosowania-Sztucznej-Inteligencji\bin\Debug\net8.0-windows\LiveCharts.dll
+C:\.Projects\.Visual_Studio_cs_projects\Zastosowania-Sztucznej-Inteligencji\bin\Debug\net8.0-windows\LiveCharts.WinForms.dll
+C:\.Projects\.Visual_Studio_cs_projects\Zastosowania-Sztucznej-Inteligencji\bin\Debug\net8.0-windows\LiveCharts.Wpf.dll
+C:\.Projects\.Visual_Studio_cs_projects\Zastosowania-Sztucznej-Inteligencji\bin\Debug\net8.0-windows\WinForms.DataVisualization.Utilities.dll
+C:\.Projects\.Visual_Studio_cs_projects\Zastosowania-Sztucznej-Inteligencji\bin\Debug\net8.0-windows\WinForms.DataVisualization.dll
+C:\.Projects\.Visual_Studio_cs_projects\Zastosowania-Sztucznej-Inteligencji\obj\Debug\net8.0-windows\Zastosowania_Sztucznej_Inteligencji.ChartContainer.resources

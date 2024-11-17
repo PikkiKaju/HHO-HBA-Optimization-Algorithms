@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using static HoneyBadgerAlgorithm;
 
 public class HarrisHawksOptimization : IOptimizationAlgorithm
 {
     public string Name { get; set; }  = "HarrisHawksOptimization";
 
-    private int PopulationSize { get; set; } = 30;
-    private int MaxIterations { get; set; } = 100;
-    private int Dimension { get; set; } = 30;
-
     // Property for the best individual
-    public double[] XBest { get; set; }
+    public double[] XBest { get; set; } = new double[1];
 
     // Property for the best individual's value of the fitness function 
     public double FBest { get; set; }
@@ -27,49 +24,55 @@ public class HarrisHawksOptimization : IOptimizationAlgorithm
         public double[] Position;
         public double Fitness;
 
-        public Hawk(int dimension)
+        public Hawk(int dimensions)
         {
-            Position = new double[dimension];
+            Position = new double[dimensions];
         }
     }
 
-    // Class constructor
-    public HarrisHawksOptimization(int populationSize = 30, int maxIterations = 100, int dimension = 30)
-    {
-        this.PopulationSize = populationSize;
-        this.MaxIterations = maxIterations;
-        this.Dimension = dimension;
-        this.XBest = new double[dimension];
-    }
-
     // HarrisHawksOptimization algorithm
-    public static OptimizationResult HHO(Func<double[], double> fitnessFunction, int populationSize, int maxIterations, int dimension, double[] lowerBounds, double[] upperBounds)
+    public static OptimizationResult HHO(
+        FitnessFunction fitnessFunction, 
+        int populationSize, 
+        int maxIterations,
+        int dimensions, 
+        double[] lowerBounds, 
+        double[] upperBounds
+    )
     {
-        List<Hawk> hawks = new List<Hawk>();
+        List<Hawk> population = new List<Hawk>();
         int numberOfEvaluationFitnessFunction = 0;
+
+        Hawk bestHawk = new Hawk(dimensions);
+
+        Func<double[], double> F = fitnessFunction.Function;
 
         // Population inicialization
         for (int i = 0; i < populationSize; i++)
         {
-            Hawk hawk = new Hawk(dimension);
-            for (int d = 0; d < dimension; d++)
+            Hawk hawk = new Hawk(dimensions);
+            for (int d = 0; d < dimensions; d++)
                 hawk.Position[d] = lowerBounds[d] + random.NextDouble() * (upperBounds[d] - lowerBounds[d]);
-            hawk.Fitness = fitnessFunction(hawk.Position);
-            hawks.Add(hawk);
+            hawk.Fitness = F(hawk.Position);
+            population.Add(hawk);
+
+            if (hawk.Fitness < double.MaxValue)
+            {
+                bestHawk = hawk;
+            }
         }
 
-        Hawk bestHawk = hawks[0];
 
         for (int t = 0; t < maxIterations; t++)
         {
             // Find the individual with the best position 
-            foreach (var hawk in hawks)
+            foreach (var hawk in population)
             {
                 if (hawk.Fitness < bestHawk.Fitness)
                     bestHawk = hawk;
             }
 
-            foreach (var hawk in hawks)
+            foreach (var hawk in population)
             {
                 double E0 = 2 * random.NextDouble() - 1;  // Initial hawk's energy
                 double J = 2 * (1 - random.NextDouble());  // Jump Rabbit's jump strength
@@ -83,11 +86,11 @@ public class HarrisHawksOptimization : IOptimizationAlgorithm
 
                 if (Math.Abs(E) >= 1)
                 {
-                    double[] Xrand = hawks[random.Next(hawks.Count)].Position;
+                    double[] Xrand = population[random.Next(population.Count)].Position;
 
                     if (q >= 0.5)
                     {
-                        for (int d = 0; d < dimension; d++)
+                        for (int d = 0; d < dimensions; d++)
                         {
                             double r1 = random.NextDouble();
                             double r2 = random.NextDouble();
@@ -96,7 +99,7 @@ public class HarrisHawksOptimization : IOptimizationAlgorithm
                     }
                     else
                     {
-                        for (int d = 0; d < dimension; d++)
+                        for (int d = 0; d < dimensions; d++)
                         {
                             double r3 = random.NextDouble();
                             double r4 = random.NextDouble();
@@ -109,8 +112,8 @@ public class HarrisHawksOptimization : IOptimizationAlgorithm
                 else
                 {
                     double r = random.NextDouble(); // Random number to decide which formula is going to be used
-                    double[] deltaX = new double[dimension]; // Location vector ∆X(t)
-                    for (int d = 0; d < dimension; d++)
+                    double[] deltaX = new double[dimensions]; // Location vector ∆X(t)
+                    for (int d = 0; d < dimensions; d++)
                     {
                         // ∆X(t) = Xrabbit(t) − X(t)
                         deltaX[d] = Math.Abs(bestHawk.Position[d] - hawk.Position[d]);
@@ -120,7 +123,7 @@ public class HarrisHawksOptimization : IOptimizationAlgorithm
                     {
                         // Soft besiege
                         // X(t +1) = ∆X(t)−E|JXrabbit(t) − X(t)|
-                        for (int d = 0; d < dimension; d++)
+                        for (int d = 0; d < dimensions; d++)
                         {
                             hawk.Position[d] = deltaX[d] - E * Math.Abs(J * bestHawk.Position[d] - hawk.Position[d]);
                         }
@@ -129,7 +132,7 @@ public class HarrisHawksOptimization : IOptimizationAlgorithm
                     {
                         // Hard besiege
                         // X(t +1) = Xrabbit(t) − E |∆X(t)|
-                        for (int d = 0; d < dimension; d++)
+                        for (int d = 0; d < dimensions; d++)
                         {
                             hawk.Position[d] = bestHawk.Position[d] - E * Math.Abs(deltaX[d]);
                         }
@@ -137,34 +140,34 @@ public class HarrisHawksOptimization : IOptimizationAlgorithm
                     else if (r < 0.5 && Math.Abs(E) >= 0.5)
                     {
                         //  Y = Xrabbit(t) − E |JXrabbit(t) − X(t)|
-                        double[] Y = HHOCalculation.CalculateY(bestHawk.Position, hawk.Position, E, J, dimension);
+                        double[] Y = HHOCalculation.CalculateY(bestHawk.Position, hawk.Position, E, J, dimensions);
 
                         //  Z = Y + S × LF(D)
-                        double[] Z = HHOCalculation.CalculateZ(Y, dimension);
+                        double[] Z = HHOCalculation.CalculateZ(Y, dimensions);
 
                         // Soft besiege with progressive rapid dives
                         // X(t + 1) =
                         //    Y if F(Y) < F(X(t))
                         //    Z if F(Z) < F(X(t))
-                        hawk.Position = fitnessFunction(Y) < fitnessFunction(hawk.Position) ? Y : Z;
+                        hawk.Position = F(Y) < F(hawk.Position) ? Y : Z;
                     }
                     else if (r < 0.5 && Math.Abs(E) < 0.5)
                     {   
                         //  Y = Xrabbit(t) − E |JXrabbit(t) − X(t)|
-                        double[] Y = HHOCalculation.CalculateY(bestHawk.Position, hawk.Position, E, J, dimension);
+                        double[] Y = HHOCalculation.CalculateY(bestHawk.Position, hawk.Position, E, J, dimensions);
 
                         //  Z = Y + S × LF(D)
-                        double[] Z = HHOCalculation.CalculateZ(Y, dimension);
+                        double[] Z = HHOCalculation.CalculateZ(Y, dimensions);
 
                         // Hard besiege with progressive rapid dives
                         // X(t + 1) =
                         //    Y if F(Y) < F(X(t))
                         //    Z if F(Z) < F(X(t))
-                        hawk.Position = fitnessFunction(Y) < fitnessFunction(hawk.Position) ? Y : Z;
+                        hawk.Position = F(Y) < F(hawk.Position) ? Y : Z;
                     }
                 }
                 numberOfEvaluationFitnessFunction++;
-                hawk.Fitness = fitnessFunction(hawk.Position); // Update the value of fitness function fot the best individual
+                hawk.Fitness = F(hawk.Position); // Update the value of fitness function fot the best individual
             }
         }
 
@@ -177,18 +180,29 @@ public class HarrisHawksOptimization : IOptimizationAlgorithm
         };   
     }
 
-    public double Solve(Func<double[], double> fitnessFunction, int populationSize = 30, int maxIterations = 100, int dimension = 30)
+    public double Solve(FitnessFunction fitnessFunction, int populationSize = 30, int maxIterations = 100, int dimensions = 1)
     {
-        double[] lowerBounds = new double[Dimension]; // Lower bounds
-        double[] upperBounds = new double[Dimension]; // Upper bounds
+        int maxDimensions;
+        if (fitnessFunction.MaxDimensions == 0) maxDimensions = dimensions;
+        else maxDimensions = (dimensions <= fitnessFunction.MaxDimensions) ? dimensions : fitnessFunction.MaxDimensions;
+        double[] lowerBounds = new double[maxDimensions]; // Lower bounds
+        double[] upperBounds = new double[maxDimensions]; // Upper bounds
 
-        for (int i = 0; i < Dimension; i++)
+        for (int i = 0; i < maxDimensions; i++)
         {
-            lowerBounds[i] = -10;
-            upperBounds[i] = 10;
+            if (fitnessFunction.MaxDimensions == 0)
+            {
+                lowerBounds[i] = fitnessFunction.MinDomain[0];
+                upperBounds[i] = fitnessFunction.MaxDomain[0];
+            }
+            else
+            {
+                lowerBounds[i] = fitnessFunction.MinDomain[i];
+                upperBounds[i] = fitnessFunction.MaxDomain[i];
+            }
         }
 
-        OptimizationResult result = HHO(fitnessFunction, populationSize, maxIterations, dimension, lowerBounds, upperBounds);
+        OptimizationResult result = HHO(fitnessFunction, populationSize, maxIterations, maxDimensions, lowerBounds, upperBounds);
 
         // Assign the value of the optimization result to the globacl class properties
         XBest = result.xBest;
