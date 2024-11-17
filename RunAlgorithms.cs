@@ -1,14 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Text;
 using System.Linq;
 using System.Security.Cryptography;
-using Zastosowania_Sztucznej_Inteligencji.HelperClasses;
 
+public class BestFunction 
+{
+    public required FitnessFunction fitnessFunction { get; set; }
+    public required TestResults testResults { get; set; }
+
+    public string ToString(int roundingDigits)
+    {
+        return "" +
+            fitnessFunction.Name +
+            testResults.ToString(roundingDigits);
+    }
+}
+
+public class RunAlgorithmsResult
+{
+    public required List<TestResults> TestResultsList { get; set; }
+    public required List<BestFunction> BestFunctionsList { get; set; }
+
+    public void Clear()
+    {
+        TestResultsList.Clear();
+        BestFunctionsList.Clear();
+    }
+}
 
 public class RunAlgorithms
 {   
-    public static void Run()
+    public static RunAlgorithmsResult Run()
     {
+        // Propertie to store tests results
+        List<TestResults> TestResultsList = new List<TestResults>();
+        List<BestFunction> BestFunctionsList = new List<BestFunction>();
+
         // Define population and iteration values
         int[] populationSizes = { 10, 20, 40, 80 };
         int[] iterations = { 5, 10, 20, 40, 60, 80 };
@@ -21,34 +49,47 @@ public class RunAlgorithms
             new HarrisHawksOptimization()
         };
 
+        int functionTestCount = 0;
+
         foreach (var algorithm in algorithms)
         {
-            foreach (var function in TestFunctions.FunctionInfos)
+            foreach (var function in FitnessFunctions.List)
             {
+                functionTestCount++;
+
+                BestFunctionsList.Add(new BestFunction { fitnessFunction = function, testResults = new TestResults() });
+
                 foreach (int popSize in populationSizes)
                 {
                     foreach (int iter in iterations)
                     {
-                        RunAlgorithmTests(algorithm, function, popSize, iter, dimension);
+                        TestResults result = RunAlgorithmTests(algorithm, function, popSize, iter, dimension);
+                        TestResultsList.Add(result);
+                        if (result.Result < BestFunctionsList[functionTestCount - 1].testResults.Result)
+                        {
+                            BestFunctionsList[functionTestCount - 1] = (new BestFunction { fitnessFunction = function, testResults = result});
+                        }
                     }
                 }
             }
         }
+
+        return new RunAlgorithmsResult { TestResultsList = TestResultsList, BestFunctionsList = BestFunctionsList };
     }
 
-    private static TestResults RunAlgorithmTests(IOptimizationAlgorithm algorithm, TestFunctions.FunctionInfo function, int populationSize, int maxIterations, int dimension)
+    private static TestResults RunAlgorithmTests(IOptimizationAlgorithm algorithm, FitnessFunction function, int populationSize, int maxIterations, int dimension)
     {
         List<double> results = new List<double>();
-        for (int i = 0; i < 10; i++)  // Run 10 times to evaluate stability
+        for (int i = 0; i < maxIterations; i++) 
         {
-            double result = algorithm.Solve(function.Function, populationSize, maxIterations, dimension);
+            double result = algorithm.Solve(function, populationSize, maxIterations, dimension);
             results.Add(result);
         }
 
         return AnalyzeAndPrintResults(results, algorithm, function, populationSize, maxIterations, false);
     }
 
-    private static TestResults AnalyzeAndPrintResults(List<double> results, IOptimizationAlgorithm algorithm, TestFunctions.FunctionInfo function, int populationSize, int maxIterations, bool print = false)
+    private static TestResults AnalyzeAndPrintResults(List<double> results, IOptimizationAlgorithm algorithm, FitnessFunction function, int populationSize, int maxIterations, bool print = false)
     {
         double mean = CalculateMean(results);
         double stdDev = CalculateStandardDeviation(results, mean);
@@ -57,7 +98,7 @@ public class RunAlgorithms
         if (print)
         {
             Console.WriteLine($"Algorithm: {algorithm.Name}, Pop Size: {populationSize}, Iterations: {maxIterations}");
-            Console.WriteLine($"Function: {function.Name}, Domain: [{function.MinX} ; {function.MaxX}], GlobalMin: {function.GlobalMin}");
+            //Console.WriteLine($"Function: {function.Name}, Domain: [{function.DomainMin} ; {function.DomainMax}], GlobalMin: {function.GlobalMin}");
             Console.WriteLine($"Mean: {mean}, Std Dev: {stdDev}, Coefficient of Variation: {coefficientOfVariation}%");
             Console.WriteLine($"Best: {results.Min()}, Worst: {results.Max()}");
             Console.WriteLine("--------------------------------------------------");

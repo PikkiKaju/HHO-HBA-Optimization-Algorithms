@@ -50,9 +50,21 @@
         "net8.0-windows7.0": {
           "targetAlias": "net8.0-windows",
           "dependencies": {
+            "LiveCharts": {
+              "target": "Package",
+              "version": "[0.9.7, )"
+            },
+            "LiveCharts.WinForms": {
+              "target": "Package",
+              "version": "[0.9.7.1, )"
+            },
             "MathNet.Numerics": {
               "target": "Package",
               "version": "[5.0.0, )"
+            },
+            "WinForms.DataVisualization": {
+              "target": "Package",
+              "version": "[1.9.2, )"
             }
           },
           "imports": [
