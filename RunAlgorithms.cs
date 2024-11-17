@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing.Text;
-using System.Linq;
-using System.Security.Cryptography;
 
 public class BestFunction 
 {
@@ -65,7 +61,7 @@ public class RunAlgorithms
                     {
                         TestResults result = RunAlgorithmTests(algorithm, function, popSize, iter, dimension);
                         TestResultsList.Add(result);
-                        if (result.Result < BestFunctionsList[functionTestCount - 1].testResults.Result)
+                        if (result.ResultF < BestFunctionsList[functionTestCount - 1].testResults.ResultF)
                         {
                             BestFunctionsList[functionTestCount - 1] = (new BestFunction { fitnessFunction = function, testResults = result});
                         }
@@ -110,7 +106,8 @@ public class RunAlgorithms
             Function = function,
             PopulationSize = populationSize,
             Iterations = maxIterations,
-            Result = results.Min(),
+            ResultF = results.Min(),
+            ResultX = algorithm.XBest,
             Mean = mean,
             StandardDeviation = stdDev,
             CoefficientOfVariation = coefficientOfVariation

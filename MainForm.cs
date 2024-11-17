@@ -18,26 +18,12 @@ namespace Zastosowania_Sztucznej_Inteligencji
         private RunAlgorithmsResult testsData;
 
         private string textBoxString = "";
-        
+
         public MainForm()
         {
             InitializeComponent();
 
-            // Populate ComboBox1
-            comboBox1.Items.Add(new ChartContainer());
-            comboBox1.Items.Add(new ChartContainer());
-            comboBox1.Items.Add(new ChartContainer());
-            comboBox1.Items.Add(new ChartContainer());
-            comboBox1.Items.Add(new ChartContainer());
-            comboBox1.Items.Add(new ChartContainer());
-
-            // Populate ComboBox2
-            comboBox2.Items.Add(new ChartContainer());
-            comboBox2.Items.Add(new ChartContainer());
-            comboBox2.Items.Add(new ChartContainer());
-            comboBox2.Items.Add(new ChartContainer());
-            comboBox2.Items.Add(new ChartContainer());
-            comboBox2.Items.Add(new ChartContainer());
+            
         }
 
         private void chart1_Click(object sender, EventArgs e)
@@ -77,9 +63,6 @@ namespace Zastosowania_Sztucznej_Inteligencji
 
         private void PlotResults(RunAlgorithmsResult testsData)
         {
-            // Clear the chart
-            chartHHO.Series.Clear();
-
             BindingList<TestResults> testsDataBL = new BindingList<TestResults>();
             foreach (var result in testsData.TestResultsList)
             {
@@ -91,30 +74,37 @@ namespace Zastosowania_Sztucznej_Inteligencji
 
             foreach (var algorithmGroup in testsDataBL.GroupBy(r => r.Algorithm.Name))
             {
-                var comboBox = algorithmNr == 0 ? comboBox1 : comboBox2;
+                var chartContainer = algorithmNr == 0 ? chartContainer1 : chartContainer2;
+                
+                chartContainer.loadData(algorithmGroup.Key, algorithmGroup.ToList());
+
                 foreach (var functionGroup in algorithmGroup.GroupBy(r => r.Function.Name))
                 {
-                    ChartContainer chartContainer = (ChartContainer)comboBox.Items[1];
-                    Chart chart = chartContainer.chart;
-                    foreach (var popSizeGroup in functionGroup.GroupBy(r => r.PopulationSize))
-                    {
-                        foreach (var iterGroup in popSizeGroup.GroupBy(r => r.Iterations))
-                        {
-                            var series = new Series($"Algorithm: {algorithmGroup.Key}, Function: {functionGroup.Key}, PopSize: {popSizeGroup.Key}, Iter: {iterGroup.Key}");
-                            
-                            foreach (var result in iterGroup)
-                            {
-                                chart.Series[0].Points.AddXY(result.Mean, result.Iterations);
-                            }
-                        }
-                    }
-                    chart.ChartAreas[0].AxisX.Title = "Mean";
-                    chart.ChartAreas[0].AxisY.Title = "Iterations";
+                    //foreach (var popSizeGroup in functionGroup.GroupBy(r => r.PopulationSize))
+                    //{
+                    //    foreach (var iterGroup in popSizeGroup.GroupBy(r => r.Iterations))
+                    //    {
+                    //        var series = new Series($"Algorithm: {algorithmGroup.Key}, Function: {functionGroup.Key}, PopSize: {popSizeGroup.Key}, Iter: {iterGroup.Key}");
+
+                    //        foreach (var result in iterGroup)
+                    //        {
+                    //            chart.Series[0].Points.AddXY(result.Mean, result.Iterations);
+                    //        }
+                    //    }
+                    //}
+                    //chart.ChartAreas[0].AxisX.Title = "Mean";
+                    //chart.ChartAreas[0].AxisY.Title = "Iterations";
 
                     functionNr++;
                 }
                 algorithmNr++;
             }
         }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
     }
 }

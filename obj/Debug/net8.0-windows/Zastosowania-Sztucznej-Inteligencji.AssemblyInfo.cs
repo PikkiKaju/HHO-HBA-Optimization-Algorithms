@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Zastosowania-Sztucznej-Inteligencji")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9d02c80c0b9d4823362fb6d3cc1ed3ae3487b05c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7fec80b317891581480498ab2507e827005d70fb")]
 [assembly: System.Reflection.AssemblyProductAttribute("Zastosowania-Sztucznej-Inteligencji")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Zastosowania-Sztucznej-Inteligencji")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
