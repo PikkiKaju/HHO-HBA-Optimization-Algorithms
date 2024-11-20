@@ -22,8 +22,6 @@ namespace Zastosowania_Sztucznej_Inteligencji
         public MainForm()
         {
             InitializeComponent();
-
-            
         }
 
         private void chart1_Click(object sender, EventArgs e)
@@ -70,7 +68,6 @@ namespace Zastosowania_Sztucznej_Inteligencji
             }
 
             int algorithmNr = 0;
-            int functionNr = 0;
 
             foreach (var algorithmGroup in testsDataBL.GroupBy(r => r.Algorithm.Name))
             {
@@ -78,25 +75,6 @@ namespace Zastosowania_Sztucznej_Inteligencji
                 
                 chartContainer.loadData(algorithmGroup.Key, algorithmGroup.ToList());
 
-                foreach (var functionGroup in algorithmGroup.GroupBy(r => r.Function.Name))
-                {
-                    //foreach (var popSizeGroup in functionGroup.GroupBy(r => r.PopulationSize))
-                    //{
-                    //    foreach (var iterGroup in popSizeGroup.GroupBy(r => r.Iterations))
-                    //    {
-                    //        var series = new Series($"Algorithm: {algorithmGroup.Key}, Function: {functionGroup.Key}, PopSize: {popSizeGroup.Key}, Iter: {iterGroup.Key}");
-
-                    //        foreach (var result in iterGroup)
-                    //        {
-                    //            chart.Series[0].Points.AddXY(result.Mean, result.Iterations);
-                    //        }
-                    //    }
-                    //}
-                    //chart.ChartAreas[0].AxisX.Title = "Mean";
-                    //chart.ChartAreas[0].AxisY.Title = "Iterations";
-
-                    functionNr++;
-                }
                 algorithmNr++;
             }
         }
