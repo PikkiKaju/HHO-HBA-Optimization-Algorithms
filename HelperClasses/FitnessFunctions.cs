@@ -27,8 +27,8 @@ public static class FitnessFunctions {
         new FitnessFunction
         {
             Name = "Rosenbrock",
-            MinDomain = [-100],
-            MaxDomain = [100],
+            MinDomain = [-10],
+            MaxDomain = [10],
             MaxDimensions = 0,
             GlobalMin = 0,
             Function = delegate(double[] x)
@@ -44,8 +44,8 @@ public static class FitnessFunctions {
         new FitnessFunction
         {
             Name = "Sphere",
-            MinDomain = [-100],
-            MaxDomain = [100],
+            MinDomain = [-10],
+            MaxDomain = [10],
             MaxDimensions = 0,
             GlobalMin = 0,
             Function = delegate(double[] x)
@@ -61,8 +61,8 @@ public static class FitnessFunctions {
         new FitnessFunction
         {
             Name = "Beale",
-            MinDomain = [-4.5, -100],
-            MaxDomain = [100, 4.5],
+            MinDomain = [-4.5, -10],
+            MaxDomain = [10, 4.5],
             MaxDimensions = 2,
             GlobalMin = 0,
             Function = delegate(double[] x)
@@ -74,8 +74,8 @@ public static class FitnessFunctions {
         new FitnessFunction
         {
             Name = "Bukin",
-            MinDomain = [-5, -100],
-            MaxDomain = [100, 5],
+            MinDomain = [-5, -10],
+            MaxDomain = [10, 5],
             MaxDimensions = 2,
             GlobalMin = 0,
             Function = delegate(double[] x)
@@ -87,8 +87,8 @@ public static class FitnessFunctions {
         new FitnessFunction
         {
             Name = "Himmelblau",
-            MinDomain = [-5, -100],
-            MaxDomain = [100, 5],
+            MinDomain = [-5, -10],
+            MaxDomain = [10, 5],
             MaxDimensions = 2,
             GlobalMin = 0,
             Function = delegate(double[] x)
