@@ -30,8 +30,8 @@
         {
             button1 = new Button();
             textBox1 = new TextBox();
-            chartContainer1 = new ChartContainer();
             chartContainer2 = new ChartContainer();
+            chartContainer1 = new ChartContainer();
             SuspendLayout();
             // 
             // button1
@@ -57,21 +57,21 @@
             textBox1.TabIndex = 2;
             textBox1.TextChanged += textBox1_TextChanged;
             // 
-            // chartContainer1
-            // 
-            chartContainer1.AutoScroll = true;
-            chartContainer1.Location = new Point(510, 41);
-            chartContainer1.Name = "chartContainer1";
-            chartContainer1.Size = new Size(1326, 701);
-            chartContainer1.TabIndex = 4;
-            // 
             // chartContainer2
             // 
             chartContainer2.AutoScroll = true;
-            chartContainer2.Location = new Point(510, 790);
+            chartContainer2.Location = new Point(487, 761);
             chartContainer2.Name = "chartContainer2";
             chartContainer2.Size = new Size(1326, 701);
-            chartContainer2.TabIndex = 5;
+            chartContainer2.TabIndex = 4;
+            // 
+            // chartContainer1
+            // 
+            chartContainer1.AutoScroll = true;
+            chartContainer1.Location = new Point(487, 12);
+            chartContainer1.Name = "chartContainer1";
+            chartContainer1.Size = new Size(1326, 701);
+            chartContainer1.TabIndex = 6;
             // 
             // MainForm
             // 
@@ -79,8 +79,8 @@
             AutoScaleMode = AutoScaleMode.Font;
             AutoScroll = true;
             ClientSize = new Size(1865, 873);
-            Controls.Add(chartContainer2);
             Controls.Add(chartContainer1);
+            Controls.Add(chartContainer2);
             Controls.Add(textBox1);
             Controls.Add(button1);
             Name = "MainForm";
@@ -92,7 +92,7 @@
         #endregion
         private Button button1;
         private TextBox textBox1;
-        private ChartContainer chartContainer1;
         private ChartContainer chartContainer2;
+        private ChartContainer chartContainer1;
     }
 }

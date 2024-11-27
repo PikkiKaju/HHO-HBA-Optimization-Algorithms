@@ -25,7 +25,11 @@ public class TestResults
             string foundMin = "[";
             foreach (var x in ResultX)
             {
-                foundMin += Math.Round(x, roundingDigits).ToString() + ", ";
+                foundMin += string.Format("{0:F" + roundingDigits + "}", Math.Round(x, roundingDigits).ToString());
+                if (x != ResultX[ResultX.Length - 1])
+                {
+                    foundMin += ", ";
+                }
             }
             foundMin.Remove(foundMin.Length - 2, 2);
             foundMin += "]";
