@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using static HoneyBadgerAlgorithm;
 
 public class HarrisHawksOptimization : IOptimizationAlgorithm
 {

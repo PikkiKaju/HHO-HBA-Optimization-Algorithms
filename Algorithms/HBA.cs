@@ -1,193 +1,185 @@
-﻿using MathNet.Numerics.Distributions;
 using System;
-using System.Collections.Generic;
-using static HoneyBadgerAlgorithm;
+using System.Linq;
+using System.Diagnostics;
 
-class HoneyBadgerAlgorithm : IOptimizationAlgorithm
+public class HoneyBadgerAlgorithm : IOptimizationAlgorithm
 {
-    public string Name { get; set; } = "HoneyBadgerAlgorithm";
-
-    // HBO algorithm's beta hyperparameter
-    public double beta { get; set; } = 6;
-
-    // HBO algorithm's C hyperparameter
-    public double C { get; set; } = 2;
-
-    // Property for the best individual
+    public string Name { get; set; } = "Honey Badger Optimization";
     public double[] XBest { get; set; } = new double[1];
-
-    // Property for the best individual's value of the fitness function 
     public double FBest { get; set; }
-
-    // Property for keeping track of the number of fitness function calls
     public int NumberOfEvaluationFitnessFunction { get; set; }
 
     private static Random random = new Random();
 
-    // Individual Prey class
-    public class Prey
+    static double[,] Initial(int pop, int dim, double[] ub, double[] lb)
     {
-        public double[] Position;
-        public double Fitness;
-
-        public Prey(int dimensions)
-        {
-            Position = new double[dimensions];
-        }
+        double[,] X = new double[pop, dim];
+        for (int i = 0; i < pop; i++)
+            for (int j = 0; j < dim; j++)
+                X[i, j] = random.NextDouble() * (ub[j] - lb[j]) + lb[j];
+        return X;
     }
 
-    // HoneyBadgerAlgorithm algorithm
-    public static OptimizationResult HBA(
-        FitnessFunction fitnessFunction, 
-        int populationSize, 
-        int maxIterations, 
-        int dimensions,
-        double[] lowerBounds,
-        double[] upperBounds,
-        double beta = 6,
-        double C = 2
-    )
+    static double CalculateFitness(double[] X, FitnessFunction fun) => fun.Function(X);
+
+    static (double[] fitness, int[] index) SortFitness(double[] Fit)
     {
-        List<Prey> population = new List<Prey>();
-        int numberOfEvaluationFitnessFunction = 0;
+        var sorted = Fit
+            .Select((value, index) => new { Value = value, Index = index })
+            .OrderBy(x => x.Value)
+            .ToArray();
 
-        Prey bestPrey = new Prey(dimensions);
-
-        // Population inicialization
-        for (int i = 0; i < populationSize; i++)
-        {
-            Prey prey = new Prey(dimensions);
-            for (int d = 0; d < dimensions; d++)
-                prey.Position[d] = lowerBounds[d] + random.NextDouble() * (upperBounds[d] - lowerBounds[d]);
-            prey.Fitness = fitnessFunction.Function(prey.Position);
-            population.Add(prey);
-
-            if (prey.Fitness < double.MaxValue)
-            {
-                bestPrey = prey;
-            }
-        }
-
-        for (int t = 0; t <= maxIterations; t++)
-        {
-            double alpha = HBOCalculation.UpdateDecreasingFactor(t, maxIterations);
-
-
-            for (int i = 0; i < populationSize; i++)
-            {
-                // Calculate intensity vector for each dimension
-                double[] I = HBOCalculation.CalculateIntensity(population[i].Position, bestPrey.Position, beta);
-
-                // Create new position
-                double[] xnew = new double[dimensions];
-                for (int d = 0; d < dimensions; d++)
-                {
-                    if (random.NextDouble() < 0.5)
-                    {
-                        xnew[d] = population[i].Position[d] + alpha * I[d] + C * (2 * random.NextDouble() - 1);
-                    }
-                    else
-                    {
-                        xnew[d] = bestPrey.Position[d] + alpha * I[d] + C * (2 * random.NextDouble() - 1);
-                    }
-                    // Ensure the new position is within the bounds
-                    xnew[d] = Math.Max(lowerBounds[d], Math.Min(upperBounds[d], xnew[d]));
-                }
-
-                // Evaluate the new position
-                double fnew = fitnessFunction.Function(xnew);
-                numberOfEvaluationFitnessFunction++;
-
-                // Update the prey's position and fitness if better
-                if (fnew <= population[i].Fitness)
-                {
-                    population[i].Position = xnew;
-                    population[i].Fitness = fnew;
-                }
-
-                // Update the global best position if this is the best seen so far
-                if (fnew <= bestPrey.Fitness)
-                {
-                    bestPrey.Position = (double[])xnew.Clone();
-                    bestPrey.Fitness = fnew;
-                }
-            }
-        }
-
-        // Return the best result
-        return new OptimizationResult
-        {
-            xBest = bestPrey.Position,
-            fBest = bestPrey.Fitness,
-            numberOfEvaluationFitnessFunction = numberOfEvaluationFitnessFunction
-        };
+        return (sorted.Select(x => x.Value).ToArray(), sorted.Select(x => x.Index).ToArray());
     }
 
-    public double Solve(FitnessFunction fitnessFunction, int populationSize = 30, int maxIterations = 100, int dimensions = 1)
+    static double[,] SortPosition(double[,] X, int[] index)
     {
-        int maxDimensions;
-        if (fitnessFunction.MaxDimensions == 0) maxDimensions = dimensions;
-        else maxDimensions = (dimensions <= fitnessFunction.MaxDimensions) ? dimensions : fitnessFunction.MaxDimensions;
-        double[] lowerBounds = new double[maxDimensions]; // Lower bounds
-        double[] upperBounds = new double[maxDimensions]; // Upper bounds
+        int rows = X.GetLength(0);
+        int cols = X.GetLength(1);
+        double[,] Xnew = new double[rows, cols];
 
-        for (int i = 0; i < maxDimensions; i++)
+        for (int i = 0; i < rows; i++)
+            for (int j = 0; j < cols; j++)
+                Xnew[i, j] = X[index[i], j];
+
+        return Xnew;
+    }
+
+    public static double[] Intensity(int pop, double[] GbestPosition, double[,] X)
+    {
+        double epsilon = 1e-15;
+        double[] di = new double[pop];
+        double[] S = new double[pop];
+        double[] I = new double[pop];
+
+        for (int j = 0; j < pop; j++)
         {
-            if (fitnessFunction.MaxDimensions == 0)
+            double[] diff = ElementWiseSubtract(Vectorize(X, j), GbestPosition);
+            di[j] = L2Norm(diff) + epsilon;
+
+            if (j < pop - 1)
             {
-                lowerBounds[i] = fitnessFunction.MinDomain[0];
-                upperBounds[i] = fitnessFunction.MaxDomain[0];
+                double[] diffNext = ElementWiseSubtract(Vectorize(X, j), Vectorize(X, j + 1));
+                S[j] = L2Norm(diffNext) + epsilon;
             }
             else
             {
-                lowerBounds[i] = fitnessFunction.MinDomain[i];
-                upperBounds[i] = fitnessFunction.MaxDomain[i];
+                double[] diffFirst = ElementWiseSubtract(Vectorize(X, j), Vectorize(X, 0));
+                S[j] = L2Norm(diffFirst) + epsilon;
             }
+
+            di[j] = Math.Pow(di[j], 2);
+            S[j] = Math.Pow(S[j], 2);
+
+            double n = random.NextDouble();
+            I[j] = n * S[j] / (4 * Math.PI * di[j]);
         }
 
-        OptimizationResult result = HBA(fitnessFunction, populationSize, maxIterations, maxDimensions, lowerBounds, upperBounds, beta, C);
+        return I;
+    }
 
-        // Assign the value of the optimization result to the globacl class properties
-        XBest = result.xBest;
-        FBest = result.fBest;
-        NumberOfEvaluationFitnessFunction = result.numberOfEvaluationFitnessFunction;
+    private static double[] Vectorize(double[,] matrix, int rowIndex)
+    {
+        return Enumerable.Range(0, matrix.GetLength(1)).Select(x => matrix[rowIndex, x]).ToArray();
+    }
+
+    private static double[] ElementWiseSubtract(double[] a, double[] b)
+    {
+        if (a.Length != b.Length)
+            throw new ArgumentException("Arrays must have the same length");
+
+        double[] result = new double[a.Length];
+        for (int i = 0; i < a.Length; i++)
+        {
+            result[i] = a[i] - b[i];
+        }
+        return result;
+    }
+
+    private static double L2Norm(double[] vector) => Math.Sqrt(vector.Sum(x => x * x));
+
+    public double Solve(FitnessFunction fun, int pop, int maxIter, int dim)
+    {
+        double[] lb = Enumerable.Repeat(-10.0, dim).ToArray();
+        double[] ub = Enumerable.Repeat(10.0, dim).ToArray();
+
+        double[,] X = Initial(pop, dim, ub, lb);
+        double[] fitness = new double[pop];
+        double[] Curve = new double[maxIter];
+
+        NumberOfEvaluationFitnessFunction = 0;
+
+        for (int i = 0; i < pop; i++)
+        {
+            fitness[i] = CalculateFitness(Vectorize(X, i), fun);
+            NumberOfEvaluationFitnessFunction++;
+        }
+
+        var (sortedFitness, sortIndex) = SortFitness(fitness);
+        X = SortPosition(X, sortIndex);
+
+        FBest = sortedFitness[0];
+        XBest = Vectorize(X, 0);
+
+        double[,] Xnew = new double[pop, dim];
+        double C = 2;
+        double beta = 6;
+        int[] vecFlag = { 1, -1 };
+
+        for (int t = 0; t < maxIter; t++)
+        {
+            double alpha = C * Math.Exp(-t / (double)maxIter);
+            double[] I = Intensity(pop, XBest, X);
+
+            for (int i = 0; i < pop; i++)
+            {
+                double Vs = random.NextDouble();
+                int F = vecFlag[random.Next(2)];
+
+                for (int j = 0; j < dim; j++)
+                {
+                    double di = XBest[j] - X[i, j];
+
+                    if (Vs < 0.5)
+                    {
+                        double r3 = random.NextDouble();
+                        double r4 = random.NextDouble();
+                        double r5 = random.NextDouble();
+
+                        Xnew[i, j] = XBest[j] +
+                                     F * beta * I[i] * XBest[j] +
+                                     F * r3 * alpha * di *
+                                     Math.Abs(Math.Cos(2 * Math.PI * r4) * (1 - Math.Cos(2 * Math.PI * r5)));
+                    }
+                    else
+                    {
+                        double r7 = random.NextDouble();
+                        Xnew[i, j] = XBest[j] + F * r7 * alpha * di;
+                    }
+                }
+
+                double tempFitness = CalculateFitness(Vectorize(Xnew, i), fun);
+                NumberOfEvaluationFitnessFunction++;
+
+                if (tempFitness < fitness[i])
+                {
+                    fitness[i] = tempFitness;
+                    for (int d = 0; d < dim; d++)
+                        X[i, d] = Xnew[i, d];
+                }
+            }
+
+            var (newFitness, newIndex) = SortFitness(fitness);
+
+            if (newFitness[0] < FBest)
+            {
+                FBest = newFitness[0];
+                XBest = Vectorize(X, newIndex[0]);
+            }
+
+            Curve[t] = FBest;
+        }
 
         return FBest;
-    }
-
-    public void Print()
-    {
-        Console.WriteLine("Najlepsza pozycja królika:\n");
-        foreach (var coord in XBest)
-        {
-            Console.WriteLine(coord);
-        }
-        Console.WriteLine($"\nWartość funkcji celu: {FBest}");
-        Console.WriteLine($"\nIlość wywołań funkcji dopasowania: {NumberOfEvaluationFitnessFunction}");
-    }
-}
-
-public class HBOCalculation
-{
-    public static double UpdateDecreasingFactor(int t, int maxIterations)
-    {
-        return 1.0 - (double)t / maxIterations;
-    }
-    public static double CalculateIntensity(double xi, double xprey, double beta)
-    {
-        return beta * Math.Abs(xi - xprey);
-    }
-
-    public static double[] CalculateIntensity(double[] xi, double[] xprey, double beta)
-    {
-        int dimension = xi.Length;
-        double[] intensity = new double[dimension];
-
-        for (int d = 0; d < dimension; d++)
-        {
-            intensity[d] = beta * Math.Abs(xi[d] - xprey[d]);
-        }
-
-        return intensity;
     }
 }
