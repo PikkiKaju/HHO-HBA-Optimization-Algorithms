@@ -67,7 +67,7 @@ public static class FitnessFunctions {
             GlobalMin = 0,
             Function = delegate(double[] x)
             {
-                if (x.Length != 2) return double.MaxValue;
+                if (x.Length != 2) return 999;
                 return Math.Pow(1.5 - x[0] + x[0] * x[1], 2) + Math.Pow(2.25 - x[0] + x[0] * x[1] * x[1], 2) + Math.Pow(2.625 - x[0] + x[0] * x[1] * x[1] * x[1], 2);
             }
         },
@@ -80,7 +80,7 @@ public static class FitnessFunctions {
             GlobalMin = 0,
             Function = delegate(double[] x)
             {
-                if (x.Length != 2) return double.MaxValue;
+                if (x.Length != 2) return 999;
                 return 100 * Math.Sqrt(Math.Abs(x[1] - 0.01 * x[0] * x[0])) + 0.01 * Math.Abs(x[0] + 10);
             }
         },
@@ -93,7 +93,7 @@ public static class FitnessFunctions {
             GlobalMin = 0,
             Function = delegate(double[] x)
             {
-                if (x.Length != 2) return double.MaxValue;
+                if (x.Length != 2) return 999;
                 return Math.Pow(x[0] * x[0] + x[1] - 11, 2) + Math.Pow(x[0] + x[1] * x[1] - 7, 2);
             }
         },

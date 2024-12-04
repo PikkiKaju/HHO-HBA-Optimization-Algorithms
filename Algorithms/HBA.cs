@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 public class HoneyBadgerAlgorithm : IOptimizationAlgorithm
 {
-    public string Name { get; set; } = "Honey Badger Optimization";
+    public string Name { get; set; } = "Honey Badger Algorithm";
     public double[] XBest { get; set; } = new double[1];
     public double FBest { get; set; }
     public int NumberOfEvaluationFitnessFunction { get; set; }

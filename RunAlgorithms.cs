@@ -46,12 +46,12 @@ public class RunAlgorithms
         // Define population and iteration values
         int[] populationSizes = { 10, 20, 40, 80 };
         int[] iterations = { 5, 10, 20, 40, 60, 80 };
-        int dimension = 3;
+        int[] dimensions = { 30 };
 
         // Initialize algorithms from HBA.cs and any other provided algorithms
         List<IOptimizationAlgorithm> algorithms = new List<IOptimizationAlgorithm>
         {
-            new HoneyBadgerAlgorithm(),  // Assuming HBA implements IOptimizationAlgorithm
+            new HoneyBadgerAlgorithm(),  
             new HarrisHawksOptimization()
         };
 
@@ -73,17 +73,22 @@ public class RunAlgorithms
                 {
                     foreach (int iter in iterations)
                     {
-                        // Run the algorithm with the current parameters and collect results.
-                        TestResults result = RunAlgorithmTests(algorithm, function, popSize, iter, dimension);
-                        TestResultsList.Add(result);
-
-                        // Update the best function results if the new result is better.
-                        if (result.ResultF < BestFunctionsList[functionTestCount - 1].testResults.ResultF)
+                        foreach (int dimension in dimensions)
                         {
-                            BestFunctionsList[functionTestCount - 1] = (new BestFunction { fitnessFunction = function, testResults = result });
+                            // Run the algorithm with the current parameters and collect results.
+                            TestResults result = RunAlgorithmTests(algorithm, function, popSize, iter, dimension);
+                            TestResultsList.Add(result);
+
+                            // Update the best function results if the new result is better.
+                            if (result.ResultF < BestFunctionsList[functionTestCount].testResults.ResultF)
+                            {
+                                BestFunctionsList[functionTestCount] = new BestFunction { fitnessFunction = function, testResults = result };
+                            }
                         }
                     }
                 }
+
+                functionTestCount++;
             }
         }
 
@@ -96,7 +101,7 @@ public class RunAlgorithms
     {
         // Store results of each run.
         List<double> results = new List<double>();
-        for (int i = 0; i < maxIterations; i++)
+        for (int i = 0; i < 10; i++)
         {
             // Run the algorithm and capture the result.
             double result = algorithm.Solve(function, populationSize, maxIterations, dimension);

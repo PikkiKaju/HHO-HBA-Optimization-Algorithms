@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "FQdpGs9YXWc=",
+  "dgSpecHash": "5EL6XcfFEyA=",
   "success": true,
-  "projectFilePath": "C:\\.Projects\\.Visual_Studio_cs_projects\\Zastosowania-Sztucznej-Inteligencji\\Zastosowania-Sztucznej-Inteligencji.csproj",
+  "projectFilePath": "C:\\Users\\igorz\\Source\\Repos\\PikkiKaju\\HHO-HBA-Optimization-Algorithms\\Zastosowania-Sztucznej-Inteligencji.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\igorz\\.nuget\\packages\\livecharts\\0.9.7\\livecharts.0.9.7.nupkg.sha512",
     "C:\\Users\\igorz\\.nuget\\packages\\livecharts.winforms\\0.9.7.1\\livecharts.winforms.0.9.7.1.nupkg.sha512",
