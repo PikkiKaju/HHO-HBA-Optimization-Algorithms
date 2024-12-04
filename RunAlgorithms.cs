@@ -63,8 +63,6 @@ public class RunAlgorithms
         {
             foreach (var function in FitnessFunctions.List)
             {
-                functionTestCount++;
-
                 // Initialize a BestFunction object for the current function.
                 BestFunctionsList.Add(new BestFunction { fitnessFunction = function, testResults = new TestResults() });
 
