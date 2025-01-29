@@ -32,6 +32,7 @@
             textBox1 = new TextBox();
             chartContainer2 = new ChartContainer();
             chartContainer1 = new ChartContainer();
+            stopButton = new Button();
             SuspendLayout();
             // 
             // button1
@@ -73,12 +74,24 @@
             chartContainer1.Size = new Size(1326, 701);
             chartContainer1.TabIndex = 6;
             // 
+            // stopButton
+            // 
+            stopButton.Enabled = false;
+            stopButton.Location = new Point(304, 41);
+            stopButton.Name = "stopButton";
+            stopButton.Size = new Size(120, 43);
+            stopButton.TabIndex = 7;
+            stopButton.Text = "Zatrzymaj testy";
+            stopButton.UseVisualStyleBackColor = true;
+            stopButton.Click += stopButton_Click;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             AutoScroll = true;
             ClientSize = new Size(1865, 873);
+            Controls.Add(stopButton);
             Controls.Add(chartContainer1);
             Controls.Add(chartContainer2);
             Controls.Add(textBox1);
@@ -94,5 +107,6 @@
         private TextBox textBox1;
         private ChartContainer chartContainer2;
         private ChartContainer chartContainer1;
+        private Button stopButton;
     }
 }

@@ -1,7 +1,9 @@
-﻿using System;
+using System;
+using System.Reflection;
+using System.Threading.Tasks;
 
 // Represents the best performance of a fitness function based on test results.
-public class BestFunction 
+public class BestFunction
 {
     // The fitness function being evaluated.
     public required FitnessFunction fitnessFunction { get; set; }
@@ -36,8 +38,12 @@ public class RunAlgorithmsResult
 // Orchestrates running multiple optimization algorithms on various fitness functions.
 public class RunAlgorithms
 {
+    // Define the cancelation token used for stoping the running algorithm tests
+    private static CancellationTokenSource tokenSource = new();
+    private static bool isRunning = false;
+
     // Entry point to execute the algorithms and collect results.
-    public static RunAlgorithmsResult Run()
+    public static RunAlgorithmsResult Run(CancellationToken cancellationToken = new())
     {
         // Propertie to store tests results
         List<TestResults> TestResultsList = new List<TestResults>();
@@ -46,25 +52,26 @@ public class RunAlgorithms
         // Define population and iteration values
         int[] populationSizes = { 10, 20, 40, 80 };
         int[] iterations = { 5, 10, 20, 40, 60, 80 };
-        int[] dimensions = { 30 };
+        int[] dimensions = { 3 };
 
         // Initialize algorithms from HBA.cs and any other provided algorithms
-        List<IOptimizationAlgorithm> algorithms = new List<IOptimizationAlgorithm>
-        {
-            new HoneyBadgerAlgorithm(),  
-            new HarrisHawksOptimization()
-        };
+        List<IOptimizationAlgorithm> algorithms = LoadAlgorithms();
 
         // Counter to keep track of fitness function tests.
         int functionTestCount = 0;
 
         // Loop through all algorithms and fitness functions.
-        foreach (var algorithm in algorithms)
+        Parallel.ForEach(algorithms, (algorithm, state) =>
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                state.Stop();
+                return;
+            }
             foreach (var function in FitnessFunctions.List)
             {
                 // Initialize a BestFunction object for the current function.
-                BestFunctionsList.Add(new BestFunction { fitnessFunction = function, testResults = new TestResults() });
+                BestFunction bestFunction = new BestFunction { fitnessFunction = function, testResults = new TestResults() };
 
                 // Run the tests for each population size and iteration combination.
                 foreach (int popSize in populationSizes)
@@ -73,14 +80,26 @@ public class RunAlgorithms
                     {
                         foreach (int dimension in dimensions)
                         {
+                            if (cancellationToken.IsCancellationRequested)
+                            {
+                                state.Stop();
+                                return;
+                            }
                             // Run the algorithm with the current parameters and collect results.
                             TestResults result = RunAlgorithmTests(algorithm, function, popSize, iter, dimension);
-                            TestResultsList.Add(result);
+                            lock (TestResultsList)
+                            {
+                                TestResultsList.Add(result);
+                            }
 
                             // Update the best function results if the new result is better.
-                            if (result.ResultF < BestFunctionsList[functionTestCount].testResults.ResultF)
+                            lock (BestFunctionsList)
                             {
-                                BestFunctionsList[functionTestCount] = new BestFunction { fitnessFunction = function, testResults = result };
+                                if (result.ResultF < bestFunction.testResults.ResultF)
+                                {
+                                    bestFunction = new BestFunction { fitnessFunction = function, testResults = result };
+                                    BestFunctionsList.Add(bestFunction);
+                                }
                             }
                         }
                     }
@@ -88,10 +107,43 @@ public class RunAlgorithms
 
                 functionTestCount++;
             }
-        }
+        });
 
         // Return the collected results and best functions.
         return new RunAlgorithmsResult { TestResultsList = TestResultsList, BestFunctionsList = BestFunctionsList };
+    }
+
+    // Asynchronously run the algorithms and collect results.
+    public static async Task<RunAlgorithmsResult> RunAsync()
+    {
+        tokenSource = new CancellationTokenSource();
+        CancellationToken cancellationToken = tokenSource.Token;
+        isRunning = true;
+
+        RunAlgorithmsResult results = await Task.Run(() => Run(cancellationToken));
+        tokenSource.Dispose();
+        isRunning = false;
+        return results; 
+    }
+
+    // Abort the execution of the algorithms.
+    public static void StopAsync()
+    {
+        if (isRunning)
+        {
+            tokenSource.Cancel();
+        }
+    }
+
+    public static bool IsRunning()
+    {
+        return isRunning;
+    }
+
+    // Dospose of the Cancellation Token
+    public static void Dispose()
+    {
+        tokenSource.Dispose();
     }
 
     // Executes the tests for a specific algorithm and fitness function.
@@ -163,5 +215,22 @@ public class RunAlgorithms
             sumOfSquares += Math.Pow(value - mean, 2);
         }
         return Math.Sqrt(sumOfSquares / values.Count);
+    }
+
+    // Dynamically loads all classes that implement IOptimizationAlgorithm from the current assembly.
+    private static List<IOptimizationAlgorithm> LoadAlgorithms()
+    {
+        var algorithms = new List<IOptimizationAlgorithm>();
+        var algorithmType = typeof(IOptimizationAlgorithm);
+        var types = Assembly.GetExecutingAssembly().GetTypes()
+            .Where(t => algorithmType.IsAssignableFrom(t) && t.IsClass && !t.IsAbstract);
+
+        foreach (var type in types)
+        {
+            var algorithm = (IOptimizationAlgorithm)Activator.CreateInstance(type);
+            algorithms.Add(algorithm);
+        }
+
+        return algorithms;
     }
 }

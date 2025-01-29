@@ -15,7 +15,7 @@ namespace Zastosowania_Sztucznej_Inteligencji
     public partial class MainForm : Form
     {
         // Get the algorithms' test results
-        private RunAlgorithmsResult testsData;
+        private RunAlgorithmsResult testsData = new RunAlgorithmsResult { TestResultsList = new List<TestResults>(), BestFunctionsList = new List<BestFunction>() };
 
         private string textBoxString = "";
 
@@ -24,16 +24,34 @@ namespace Zastosowania_Sztucznej_Inteligencji
             InitializeComponent();
         }
 
-        private void chart1_Click(object sender, EventArgs e)
+        private async void button1_Click(object sender, EventArgs e)
         {
+            if (testsData is not null)
+            {
+                testsData.Clear();
+                stopButton.Enabled = true;
 
+                testsData = await RunAlgorithms.RunAsync();
+                stopButton.Enabled = false;
+
+                PrintResults(testsData);
+                PlotResults(testsData);
+            }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void stopButton_Click(object sender, EventArgs e)
         {
-            if (testsData is not null) testsData.Clear();
+            if (RunAlgorithms.IsRunning()) 
+            {
+                textBox1.AppendText($"\r\n---------------------------------------------------\r\n");
+                textBox1.AppendText($"\r\nCalculations aborted.\r\n");
+                textBox1.AppendText($"\r\n---------------------------------------------------\r\n");
+                RunAlgorithms.StopAsync();
+            }
+        }
 
-            testsData = RunAlgorithms.Run();
+        private void PrintResults(RunAlgorithmsResult testsData) 
+        {
             int i = 0;
 
             foreach (var testResults in testsData.TestResultsList)
@@ -50,13 +68,6 @@ namespace Zastosowania_Sztucznej_Inteligencji
                 textBox1.AppendText(bestFunction.ToString(5));
             }
             textBox1.AppendText($"\r\nNumber of tests completed: {i}");
-
-            PlotResults(testsData);
-        }
-
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-
         }
 
         private void PlotResults(RunAlgorithmsResult testsData)
@@ -72,17 +83,26 @@ namespace Zastosowania_Sztucznej_Inteligencji
             foreach (var algorithmGroup in testsDataBL.GroupBy(r => r.Algorithm.Name))
             {
                 var chartContainer = algorithmNr == 0 ? chartContainer1 : chartContainer2;
-                
+
                 chartContainer.loadData(algorithmGroup.Key, algorithmGroup.ToList());
 
                 algorithmNr++;
             }
         }
 
-        private void textBox2_TextChanged(object sender, EventArgs e)
+        private void chart1_Click(object sender, EventArgs e)
         {
 
         }
 
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }
