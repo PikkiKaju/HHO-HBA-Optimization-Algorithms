@@ -31,7 +31,11 @@ namespace Zastosowania_Sztucznej_Inteligencji
                 testsData.Clear();
                 stopButton.Enabled = true;
 
+                RunAlgorithms.LoadAlgorithmsFromDll();
+                RunAlgorithms.LoadFitnessFunctionsFromDll();
+
                 testsData = await RunAlgorithms.RunAsync();
+
                 stopButton.Enabled = false;
 
                 PrintResults(testsData);

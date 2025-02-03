@@ -1,6 +1,6 @@
 using System;
+using System.Diagnostics;
 using System.Reflection;
-using System.Threading.Tasks;
 
 // Represents the best performance of a fitness function based on test results.
 public class BestFunction
@@ -35,6 +35,7 @@ public class RunAlgorithmsResult
     }
 }
 
+
 // Orchestrates running multiple optimization algorithms on various fitness functions.
 public class RunAlgorithms
 {
@@ -49,6 +50,12 @@ public class RunAlgorithms
     // Entry point to execute the algorithms and collect results.
     public static RunAlgorithmsResult Run(CancellationToken cancellationToken = new())
     {
+        // Check if the algorithms are loaded
+        if (algorithms.Count == 0)
+        {
+            throw new Exception("algorithms List is empty");
+        }
+
         // Propertie to store tests results
         List<TestResults> TestResultsList = new List<TestResults>();
         List<BestFunction> BestFunctionsList = new List<BestFunction>();
@@ -58,8 +65,6 @@ public class RunAlgorithms
         int[] iterations = { 5, 10, 20, 40, 60, 80 };
         int[] dimensions = { 3 };
 
-        // Initialize algorithms from HBA.cs and any other provided algorithms
-        List<IOptimizationAlgorithm> algorithms = LoadAlgorithms();
 
         // Counter to keep track of fitness function tests.
         int functionTestCount = 0;
@@ -221,20 +226,174 @@ public class RunAlgorithms
         return Math.Sqrt(sumOfSquares / values.Count);
     }
 
-    // Dynamically loads all classes that implement IOptimizationAlgorithm from the current assembly.
-    private static List<IOptimizationAlgorithm> LoadAlgorithms()
+
+    // Loads all classes that implement IOptimizationAlgorithm from the current assembly.
+    public static List<IOptimizationAlgorithm> LoadAlgorithmsDefault()
     {
         var algorithms = new List<IOptimizationAlgorithm>();
         var algorithmType = typeof(IOptimizationAlgorithm);
         var types = Assembly.GetExecutingAssembly().GetTypes()
             .Where(t => algorithmType.IsAssignableFrom(t) && t.IsClass && !t.IsAbstract);
 
-        foreach (var type in types)
+        if (types.Count() != 0)
         {
-            var algorithm = (IOptimizationAlgorithm)Activator.CreateInstance(type);
-            algorithms.Add(algorithm);
+            foreach (var type in types)
+            {
+                var algorithm = (IOptimizationAlgorithm)Activator.CreateInstance(type);
+                algorithms.Add(algorithm);
+                if (!RunAlgorithms.algorithms.Contains(algorithm))
+                {
+                    RunAlgorithms.algorithms.Add(algorithm);
+                }
+            }
+        }
+        else
+        {
+            throw new Exception($"The default DLL file(s) could not be read.");
+        }
+        return algorithms;
+    }
+
+    // Loads all classes that implement IOptimizationAlgorithm from the DLL in specified path.
+    public static List<IOptimizationAlgorithm> LoadAlgorithmsFromDll(string dllDirectory = "C:\\.Projects\\Visual_Studio_cs_projects\\Zastosowania-Sztucznej-Inteligencji\\DLLs\\OptimizationAlgorithms")
+    {
+        var algorithms = new List<IOptimizationAlgorithm>();
+
+        if (!Directory.Exists(dllDirectory))
+        {
+            throw new FileNotFoundException($"The specified DLL directory was not found: {dllDirectory}");
+        }
+
+        var dllFiles = Directory.GetFiles(dllDirectory, "*.dll");
+
+        if (dllFiles.Count() == 0)
+        {
+            throw new FileNotFoundException($"The specified DLL directory does not contain any files: {dllDirectory}");
+        }
+
+        foreach (var dll in dllFiles)
+        {
+            try
+            {
+                Assembly assembly = Assembly.LoadFrom(dll);
+
+                var algorithmTypes = assembly.GetTypes()
+                    .Where(t => typeof(IOptimizationAlgorithm).IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract);
+
+                foreach (var type in algorithmTypes)
+                {
+                    if (Activator.CreateInstance(type) is IOptimizationAlgorithm algorithmInstance)
+                    {
+                        if (!RunAlgorithms.algorithms.Any(a => a.GetType() == algorithmInstance.GetType()))
+                        //if (!RunAlgorithms.algorithms.Contains(algorithmInstance))
+                        {
+                            RunAlgorithms.algorithms.Add(algorithmInstance);
+                            algorithms.Add(algorithmInstance);
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                throw new Exception($"The DLL file(s) from the specified directory could not be read: {dllDirectory}");
+            }
         }
 
         return algorithms;
+    }
+
+    // Add an optimization algorithm to the algorithms list.
+    public static bool AddAlgorithm(IOptimizationAlgorithm algorithm)
+    {
+        if (!RunAlgorithms.algorithms.Contains(algorithm))
+        {
+            RunAlgorithms.algorithms.Add(algorithm);
+            return true;
+        }
+        return false;
+    }
+
+    // Get the algorithms list.
+    public static List<IOptimizationAlgorithm> GetAlgorithms()
+    {
+        return RunAlgorithms.algorithms;
+    }
+
+
+    // Loads the Fitness fiunctions from the current assembly.
+    public static List<IFitnessFunction> LoadFitnessFunctionsDefault()
+    {
+        foreach (var function in DefaultFitnessFunctions.List)
+        {
+            if (!RunAlgorithms.functions.Contains(function))
+            {
+                RunAlgorithms.functions.Add(function);
+            }
+        }
+
+        return DefaultFitnessFunctions.List;
+    }
+
+    public static List<IFitnessFunction> LoadFitnessFunctionsFromDll(string dllDirectory = "C:\\.Projects\\Visual_Studio_cs_projects\\Zastosowania-Sztucznej-Inteligencji\\DLLs\\FitnessFunctions")
+    {
+        var functions = new List<IFitnessFunction>();
+
+        if (!Directory.Exists(dllDirectory))
+        {
+            throw new FileNotFoundException($"The specified DLL directory was not found: {dllDirectory}");
+        }
+
+        var dllFiles = Directory.GetFiles(dllDirectory, "*.dll");
+
+        if (dllFiles.Count() == 0)
+        {
+            throw new FileNotFoundException($"The specified DLL directory does not contain any files: {dllDirectory}");
+        }
+
+        foreach (string dll in dllFiles)
+        {
+            try
+            {
+                Assembly assembly = Assembly.LoadFrom(dll);
+
+                var functionTypes = assembly.GetTypes()
+                    .Where(t => typeof(IFitnessFunction).IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract);
+
+                Debug.Write(functionTypes.Count());
+
+                foreach (var type in functionTypes)
+                {
+                    if (Activator.CreateInstance(type) is IFitnessFunction functionInstance)
+                    {
+                        if (!RunAlgorithms.functions.Contains(functionInstance))
+                        {
+                            RunAlgorithms.functions.Add(functionInstance);
+                            functions.Add(functionInstance);
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                throw new Exception($"The DLL file(s) from the specified directory could not be read: {dllDirectory}");
+            }
+        }
+
+        return functions;
+    }
+
+    public static bool AddFunction(IFitnessFunction function)
+    {
+        if (!RunAlgorithms.functions.Contains(function))
+        {
+            RunAlgorithms.functions.Add(function);
+            return true;
+        }
+        return false;
+    }
+
+    public static List<IFitnessFunction> GetFunctions()
+    {
+        return RunAlgorithms.functions;
     }
 }
