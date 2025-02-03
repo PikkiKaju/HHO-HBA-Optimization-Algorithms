@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 public class BestFunction
 {
     // The fitness function being evaluated.
-    public required FitnessFunction fitnessFunction { get; set; }
+    public required IFitnessFunction fitnessFunction { get; set; }
     // The test results associated with the fitness function.
     public required TestResults testResults { get; set; }
 
@@ -42,6 +42,10 @@ public class RunAlgorithms
     private static CancellationTokenSource tokenSource = new();
     private static bool isRunning = false;
 
+    // Initialize algorithms from HBA.cs and any other provided algorithms
+    private static List<IOptimizationAlgorithm> algorithms = new List<IOptimizationAlgorithm>();
+    private static List<IFitnessFunction> functions = new List<IFitnessFunction>();
+
     // Entry point to execute the algorithms and collect results.
     public static RunAlgorithmsResult Run(CancellationToken cancellationToken = new())
     {
@@ -68,7 +72,7 @@ public class RunAlgorithms
                 state.Stop();
                 return;
             }
-            foreach (var function in FitnessFunctions.List)
+            foreach (var function in DefaultFitnessFunctions.List)
             {
                 // Initialize a BestFunction object for the current function.
                 BestFunction bestFunction = new BestFunction { fitnessFunction = function, testResults = new TestResults() };
@@ -147,7 +151,7 @@ public class RunAlgorithms
     }
 
     // Executes the tests for a specific algorithm and fitness function.
-    private static TestResults RunAlgorithmTests(IOptimizationAlgorithm algorithm, FitnessFunction function, int populationSize, int maxIterations, int dimension)
+    private static TestResults RunAlgorithmTests(IOptimizationAlgorithm algorithm, IFitnessFunction function, int populationSize, int maxIterations, int dimension)
     {
         // Store results of each run.
         List<double> results = new List<double>();
@@ -163,7 +167,7 @@ public class RunAlgorithms
     }
 
     // Analyzes the results of the algorithm runs and optionally prints the output.
-    private static TestResults AnalyzeAndPrintResults(List<double> results, IOptimizationAlgorithm algorithm, FitnessFunction function, int populationSize, int maxIterations, bool print = false)
+    private static TestResults AnalyzeAndPrintResults(List<double> results, IOptimizationAlgorithm algorithm, IFitnessFunction function, int populationSize, int maxIterations, bool print = false)
     {
         // Calculate statistics for the results.
         double mean = CalculateMean(results);

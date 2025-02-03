@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35506.116
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zastosowania_Sztucznej_Inteligencji", "Zastosowania_Sztucznej_Inteligencji.csproj", "{0ACFB5EE-7633-437F-9798-02AC2C1D26A5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OptimizationAlgorithmSample", "..\OptimizationAlgorithmSample\OptimizationAlgorithmSample.csproj", "{9297B0A9-0B6C-4208-B69B-A7F0913C0A81}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FitnessFunctionSample", "..\FitnessFunctionSample\FitnessFunctionSample.csproj", "{A4F2D63F-C499-47DD-B9BC-6260AD0BC5BC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0ACFB5EE-7633-437F-9798-02AC2C1D26A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0ACFB5EE-7633-437F-9798-02AC2C1D26A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0ACFB5EE-7633-437F-9798-02AC2C1D26A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0ACFB5EE-7633-437F-9798-02AC2C1D26A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9297B0A9-0B6C-4208-B69B-A7F0913C0A81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9297B0A9-0B6C-4208-B69B-A7F0913C0A81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9297B0A9-0B6C-4208-B69B-A7F0913C0A81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9297B0A9-0B6C-4208-B69B-A7F0913C0A81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A4F2D63F-C499-47DD-B9BC-6260AD0BC5BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4F2D63F-C499-47DD-B9BC-6260AD0BC5BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4F2D63F-C499-47DD-B9BC-6260AD0BC5BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4F2D63F-C499-47DD-B9BC-6260AD0BC5BC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

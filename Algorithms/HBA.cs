@@ -20,7 +20,7 @@ public class HoneyBadgerAlgorithm : IOptimizationAlgorithm
         return X;
     }
 
-    static double CalculateFitness(double[] X, FitnessFunction fun) => fun.Function(X);
+    static double CalculateFitness(double[] X, IFitnessFunction fun) => fun.Function(X);
 
     static (double[] fitness, int[] index) SortFitness(double[] Fit)
     {
@@ -98,7 +98,7 @@ public class HoneyBadgerAlgorithm : IOptimizationAlgorithm
 
     private static double L2Norm(double[] vector) => Math.Sqrt(vector.Sum(x => x * x));
 
-    public double Solve(FitnessFunction fun, int pop, int maxIter, int dim)
+    public double Solve(IFitnessFunction fun, int pop, int maxIter, int dim)
     {
         double[] lb = Enumerable.Repeat(-10.0, dim).ToArray();
         double[] ub = Enumerable.Repeat(10.0, dim).ToArray();

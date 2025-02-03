@@ -1,13 +1,9 @@
 ﻿
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using System.Security.Cryptography;
-using System.Linq;
-using MathNet.Numerics;
 
 public class TestResults
 {
     public IOptimizationAlgorithm Algorithm { get; set; } = null;
-    public FitnessFunction Function { get; set; } = null;
+    public IFitnessFunction Function { get; set; } = null;
     public int PopulationSize { get; set; } = 0;
     public int Iterations { get; set; } = 0;
     // Result of the fitness function
