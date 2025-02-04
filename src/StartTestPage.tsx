@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface TestResult {
   fitnessFunctionName: string;
@@ -28,6 +29,7 @@ const FetchDataComponent = () => {
   const [data, setData] = useState<ApiResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch("https://localhost:7178/api/algorithm/run-single") // Replace with actual API endpoint
@@ -47,8 +49,25 @@ const FetchDataComponent = () => {
       });
   }, []);
 
-  if (loading) return <p className="text-center">Loading...</p>;
-  if (error) return <p className="text-center text-red-500">Error: {error}</p>;
+  if (loading)
+    return (
+      <div className="text-center">
+        <p>Loading...</p>
+        <button onClick={() => navigate("/")} className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">
+          Go Back
+        </button>
+      </div>
+    );
+  
+  if (error)
+    return (
+      <div className="text-center">
+        <p className="text-red-500">Error: {error}</p>
+        <button onClick={() => navigate("/")} className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700">
+          Go Back
+        </button>
+      </div>
+    );
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
@@ -75,6 +94,7 @@ const FetchDataComponent = () => {
           </div>
         ))}
       </div>
+      <button onClick={() => navigate("/")}>Go Back</button>
     </div>
   );
 };
