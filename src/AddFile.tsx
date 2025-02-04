@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { UploadCloud } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const DllUploader: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
-
+  const navigate = useNavigate();
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
     if (selectedFile && selectedFile.name.endsWith(".dll")) {
@@ -29,6 +30,7 @@ const DllUploader: React.FC = () => {
           <UploadCloud size={20} className="inline mr-2" /> Upload .dll File
         </label>
         {file && <p className="mt-3 text-sm text-gray-600">Selected: {file.name}</p>}
+        <button onClick={() => navigate("/")}>Go Back</button>
       </div>
     </div>
   );
