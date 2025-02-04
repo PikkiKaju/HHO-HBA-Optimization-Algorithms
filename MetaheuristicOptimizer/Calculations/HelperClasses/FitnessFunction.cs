@@ -10,7 +10,7 @@
     /// - MaxDimensions: maximal number of dimension for the function
     /// - GlobalMin: the global minimum of the function
     /// - Function: the fittness function
-    public class FitnessFunction
+    public class FitnessFunction1
     {
         public required string Name { get; set; }
         public required double[] MinDomain { get; set; }

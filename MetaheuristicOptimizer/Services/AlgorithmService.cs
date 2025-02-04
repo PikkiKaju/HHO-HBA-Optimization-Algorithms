@@ -29,7 +29,7 @@ namespace MetaheuristicOptimizer.Services
             // Store results of each run.
             foreach (var functionName in request.FitnessFunctions)
             {
-                FitnessFunction function = FitnessFunctions.List
+                IFitnessFunction function = FitnessFunctions.List
                     .FirstOrDefault(f => f.Name.Equals(functionName, StringComparison.OrdinalIgnoreCase));
 
                 if (function == null)

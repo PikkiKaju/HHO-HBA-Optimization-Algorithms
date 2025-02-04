@@ -8,7 +8,7 @@ namespace MetaheuristicOptimizer.Calculations
     public class BestFunction
     {
         // The fitness function being evaluated.
-        public required FitnessFunction fitnessFunction { get; set; }
+        public required IFitnessFunction fitnessFunction { get; set; }
         // The test results associated with the fitness function.
         public required AlgorithmTestResult testResults { get; set; }
     }
@@ -31,7 +31,7 @@ namespace MetaheuristicOptimizer.Calculations
     public static class AlgorithmCalculations
     {
         // Executes the tests for a specific algorithm and fitness function.
-        public static AlgorithmTestResult RunAlgorithmTest(IOptimizationAlgorithm algorithm, FitnessFunction function, int populationSize, int maxIterations, int dimension)
+        public static AlgorithmTestResult RunAlgorithmTest(IOptimizationAlgorithm algorithm, IFitnessFunction function, int populationSize, int maxIterations, int dimension)
         {
             
 
@@ -47,7 +47,7 @@ namespace MetaheuristicOptimizer.Calculations
             return AnalyzeResults(results, algorithm, function, populationSize, maxIterations);
         }
 
-        private static AlgorithmTestResult AnalyzeResults(List<double> results, IOptimizationAlgorithm algorithm, FitnessFunction function, int populationSize, int maxIterations)
+        private static AlgorithmTestResult AnalyzeResults(List<double> results, IOptimizationAlgorithm algorithm, IFitnessFunction function, int populationSize, int maxIterations)
         {
             // Calculate statistics for the results.
             double mean = CalculateMean(results);

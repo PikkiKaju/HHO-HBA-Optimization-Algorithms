@@ -31,7 +31,7 @@ namespace MetaheuristicOptimizer.Calculations.Algorithms
 
         // HarrisHawksOptimization algorithm
         public static OptimizationResult HHO(
-            FitnessFunction fitnessFunction,
+            IFitnessFunction fitnessFunction,
             int populationSize,
             int maxIterations,
             int dimensions,
@@ -179,7 +179,7 @@ namespace MetaheuristicOptimizer.Calculations.Algorithms
             };
         }
 
-        public double Solve(FitnessFunction fitnessFunction, int populationSize = 30, int maxIterations = 100, int dimensions = 1)
+        public double Solve(IFitnessFunction fitnessFunction, int populationSize = 30, int maxIterations = 100, int dimensions = 1)
         {
             int maxDimensions;
             if (fitnessFunction.MaxDimensions == 0) maxDimensions = dimensions;

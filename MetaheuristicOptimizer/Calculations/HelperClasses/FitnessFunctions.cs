@@ -2,100 +2,101 @@
 {
     public static class FitnessFunctions
     {
-        // A list of fitness functions' info and the functions themselves
-        public static readonly List<FitnessFunction> List = new List<FitnessFunction>
+        public static List<IFitnessFunction> List { get; } = new List<IFitnessFunction>
     {
-        new FitnessFunction
-        {
-            Name = "Rastrigin",
-            MinDomain = [-5.12],
-            MaxDomain = [5.12],
-            MaxDimensions = 0,
-            GlobalMin = 0,
-            Function = delegate(double[] x)
-            {
-                double A = 10.0;
-                double sum = 0.0;
-                for (int i = 0; i < x.Length; i++)
-                {
-                    sum += x[i] * x[i] - A * Math.Cos(2 * Math.PI * x[i]);
-                }
-                return A * x.Length + sum;
-            }
-        },
-        new FitnessFunction
-        {
-            Name = "Rosenbrock",
-            MinDomain = [-10],
-            MaxDomain = [10],
-            MaxDimensions = 0,
-            GlobalMin = 0,
-            Function = delegate(double[] x)
-            {
-                double sum = 0.0;
-                for (int i = 0; i < x.Length - 1; i++)
-                {
-                    sum += 100 * Math.Pow(x[i + 1] - x[i] * x[i], 2) + Math.Pow(1 - x[i], 2);
-                }
-                return sum;
-            }
-        },
-        new FitnessFunction
-        {
-            Name = "Sphere",
-            MinDomain = [-10],
-            MaxDomain = [10],
-            MaxDimensions = 0,
-            GlobalMin = 0,
-            Function = delegate(double[] x)
-            {
-                double sum = 0.0;
-                for (int i = 0; i < x.Length; i++)
-                {
-                    sum += x[i] * x[i];
-                }
-                return sum;
-            }
-        },
-        new FitnessFunction
-        {
-            Name = "Beale",
-            MinDomain = [-4.5, -10],
-            MaxDomain = [10, 4.5],
-            MaxDimensions = 2,
-            GlobalMin = 0,
-            Function = delegate(double[] x)
-            {
-                if (x.Length != 2) return 999;
-                return Math.Pow(1.5 - x[0] + x[0] * x[1], 2) + Math.Pow(2.25 - x[0] + x[0] * x[1] * x[1], 2) + Math.Pow(2.625 - x[0] + x[0] * x[1] * x[1] * x[1], 2);
-            }
-        },
-        new FitnessFunction
-        {
-            Name = "Bukin",
-            MinDomain = [-5, -10],
-            MaxDomain = [10, 5],
-            MaxDimensions = 2,
-            GlobalMin = 0,
-            Function = delegate(double[] x)
-            {
-                if (x.Length != 2) return 999;
-                return 100 * Math.Sqrt(Math.Abs(x[1] - 0.01 * x[0] * x[0])) + 0.01 * Math.Abs(x[0] + 10);
-            }
-        },
-        new FitnessFunction
-        {
-            Name = "Himmelblau",
-            MinDomain = [-5, -10],
-            MaxDomain = [10, 5],
-            MaxDimensions = 2,
-            GlobalMin = 0,
-            Function = delegate(double[] x)
-            {
-                if (x.Length != 2) return 999;
-                return Math.Pow(x[0] * x[0] + x[1] - 11, 2) + Math.Pow(x[0] + x[1] * x[1] - 7, 2);
-            }
-        },
+        new SphereFunction(),
+        new RosenbrockFunction(),
+        new RastriginFunction(),
+        new BealeFunction(),
+        new BukinFunction(),
+        new HimmelblauFunction()
     };
+    }
+
+
+    public class SphereFunction : IFitnessFunction
+    {
+        public string Name { get; set; } = "Sphere";
+        public double[] MinDomain { get; set; } = { -5.12, -5.12, -5.12 };
+        public double[] MaxDomain { get; set; } = { 5.12, 5.12, 5.12 };
+        public int MaxDimensions { get; set; } = 3;
+        public double GlobalMin { get; set; } = 0;
+        public Func<double[], double> Function { get; set; } = x => x.Sum(xi => xi * xi);
+    }
+
+    public class RosenbrockFunction : IFitnessFunction
+    {
+        public string Name { get; set; } = "Rosenbrock";
+        public double[] MinDomain { get; set; } = { -5, -5, -5 };
+        public double[] MaxDomain { get; set; } = { 10, 10, 10 };
+        public int MaxDimensions { get; set; } = 3;
+        public double GlobalMin { get; set; } = 0;
+        public Func<double[], double> Function { get; set; } = x =>
+        {
+            double sum = 0;
+            for (int i = 0; i < x.Length - 1; i++)
+            {
+                sum += 100 * Math.Pow(x[i + 1] - x[i] * x[i], 2) + Math.Pow(x[i] - 1, 2);
+            }
+            return sum;
+        };
+    }
+
+    public class RastriginFunction : IFitnessFunction
+    {
+        public string Name { get; set; } = "Rastrigin";
+        public double[] MinDomain { get; set; } = { -5.12, -5.12, -5.12 };
+        public double[] MaxDomain { get; set; } = { 5.12, 5.12, 5.12 };
+        public int MaxDimensions { get; set; } = 3;
+        public double GlobalMin { get; set; } = 0;
+        public Func<double[], double> Function { get; set; } = x =>
+        {
+            double sum = 10 * x.Length;
+            for (int i = 0; i < x.Length; i++)
+            {
+                sum += x[i] * x[i] - 10 * Math.Cos(2 * Math.PI * x[i]);
+            }
+            return sum;
+        };
+    }
+
+    public class BealeFunction : IFitnessFunction
+    {
+        public string Name { get; set; } = "Beale";
+        public double[] MinDomain { get; set; } = [-4.5, -10];
+        public double[] MaxDomain { get; set; } = [10, 4.5];
+        public int MaxDimensions { get; set; } = 2;
+        public double GlobalMin { get; set; } = 0;
+        public Func<double[], double> Function { get; set; } = x =>
+        {
+            if (x.Length != 2) return 999;
+            return Math.Pow(1.5 - x[0] + x[0] * x[1], 2) + Math.Pow(2.25 - x[0] + x[0] * x[1] * x[1], 2) + Math.Pow(2.625 - x[0] + x[0] * x[1] * x[1] * x[1], 2);
+        };
+    }
+    public class BukinFunction : IFitnessFunction
+    {
+        public string Name { get; set; } = "Bukin";
+        public double[] MinDomain { get; set; } = [-5, -10];
+        public double[] MaxDomain { get; set; } = [10, 5];
+        public int MaxDimensions { get; set; } = 2;
+        public double GlobalMin { get; set; } = 0;
+        public Func<double[], double> Function { get; set; } = x =>
+        {
+            if (x.Length != 2) return 999;
+            return 100 * Math.Sqrt(Math.Abs(x[1] - 0.01 * x[0] * x[0])) + 0.01 * Math.Abs(x[0] + 10);
+        };
+    }
+    public class HimmelblauFunction : IFitnessFunction
+    {
+        public string Name { get; set; } = "Himmelblau";
+        public double[] MinDomain { get; set; } = [-5, -10];
+        public double[] MaxDomain { get; set; } = [10, 5];
+        public int MaxDimensions { get; set; } = 2;
+        public double GlobalMin { get; set; } = 0;
+        public Func<double[], double> Function { get; set; } = x =>
+        {
+            if (x.Length != 2) return 999;
+            return Math.Pow(x[0] * x[0] + x[1] - 11, 2) + Math.Pow(x[0] + x[1] * x[1] - 7, 2);
+        };
     }
 }

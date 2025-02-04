@@ -15,7 +15,7 @@ namespace MetaheuristicOptimizer.Calculations.Algorithms
         // W przeciwnym razie zaczyna obliczenia od początku.
         // Zwraca wartość funkcji celu dla znalezionego rozwiązania
         // (najlepszego osobnika)
-        double Solve(FitnessFunction function, int populationSize, int maxIterations, int dimension);
+        double Solve(IFitnessFunction function, int populationSize, int maxIterations, int dimension);
 
         // Właściwość zwracająca tablicę z najlepszym osobnikiem
         double[] XBest { get; set; }
