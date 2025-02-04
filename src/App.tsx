@@ -11,7 +11,7 @@ const App: React.FC = () => {
   return (
     
     <div className="App" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-      <h1 style={{ fontWeight: "bold", textAlign: "center" }}>Testing Algorithms HBA and HBO</h1>
+      <h1 style={{ fontWeight: "bold", textAlign: "center" }}>Testing Algorithms HBA and HHO</h1>
       <table border="1" style={{ textAlign: "center", padding: "10px", borderCollapse: "collapse", width: "50%" }}>
         <tbody>
           <tr>
