@@ -8,29 +8,40 @@ const TestPage: React.FC = () => {
 
   const [formData, setFormData] = useState({
     id: 1,
-    FitnessFunction: "", // Single function (backend expects string)
-    AlgorithmName: [] as string[], // Multiple algorithms (backend expects List<string>)
+    algorithmName: "", // Single algorithm
+    populationSize: 10,
+    iterations: 5,
+    dimension: 1,
+    fitnessFunctions: [] as string[], // Multiple functions
     createdAt: new Date().toISOString(),
   });
 
   const options = ["Rastrigin", "Rosenbrock", "Sphere", "Beale", "Bukin", "Himmelblau"];
-  const algorithms = ["HBA", "HBO"];
+  const algorithms = ["HBA", "HHO"];
 
-  // Handle multiple algorithm selection (checkboxes)
-  const handleAlgorithmChange = (option: string) => {
+  // Handle single algorithm selection (radio buttons)
+  const handleAlgorithmChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
       ...prev,
-      AlgorithmName: prev.AlgorithmName.includes(option)
-        ? prev.AlgorithmName.filter((item) => item !== option) // Uncheck
-        : [...prev.AlgorithmName, option], // Check
+      algorithmName: e.target.value,
     }));
   };
 
-  // Handle single fitness function selection (radio buttons)
-  const handleFunctionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Handle multiple fitness function selection (checkboxes)
+  const handleFunctionChange = (option: string) => {
     setFormData((prev) => ({
       ...prev,
-      FitnessFunction: e.target.value, // Backend expects a string
+      fitnessFunctions: prev.fitnessFunctions.includes(option)
+        ? prev.fitnessFunctions.filter((item) => item !== option) // Uncheck
+        : [...prev.fitnessFunctions, option], // Check
+    }));
+  };
+
+  const handleParameterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: Number(value),
     }));
   };
 
@@ -67,27 +78,42 @@ const TestPage: React.FC = () => {
 
       <h1>Test by function</h1>
 
-      {/* Multiple Algorithm Selection */}
-      <p>Pick Algorithms:</p>
+      {/* Single Algorithm Selection */}
+      <p>Pick an Algorithm:</p>
       <div>
         {algorithms.map((algorithm) => (
           <label key={algorithm} style={{ display: "block", margin: "5px 0" }}>
-            <input type="checkbox" value={algorithm} checked={formData.AlgorithmName.includes(algorithm)} onChange={() => handleAlgorithmChange(algorithm)} />
+            <input type="radio" name="algorithmName" value={algorithm} checked={formData.algorithmName === algorithm} onChange={handleAlgorithmChange} />
             {algorithm}
           </label>
         ))}
       </div>
 
-      {/* Single Fitness Function Selection */}
-      <p>Pick a function:</p>
+      {/* Multiple Function Selection */}
+      <p>Pick Functions:</p>
       <div>
         {options.map((option) => (
           <label key={option} style={{ display: "block", margin: "5px 0" }}>
-            <input type="radio" name="FitnessFunction" value={option} checked={formData.FitnessFunction === option} onChange={handleFunctionChange} />
+            <input type="checkbox" value={option} checked={formData.fitnessFunctions.includes(option)} onChange={() => handleFunctionChange(option)} />
             {option}
           </label>
         ))}
       </div>
+
+      {/* Input Fields */}
+      <p>Set parameters:</p>
+      <label>
+        Number of Iterations:
+        <input type="number" name="iterations" value={formData.iterations} onChange={handleParameterChange} />
+      </label>
+      <label>
+        Population Size:
+        <input type="number" name="populationSize" value={formData.populationSize} onChange={handleParameterChange} />
+      </label>
+      <label>
+        Dimensions:
+        <input type="number" name="dimension" value={formData.dimension} onChange={handleParameterChange} />
+      </label>
 
       {/* Buttons */}
       <button onClick={handleSubmit}>Start Test</button>
