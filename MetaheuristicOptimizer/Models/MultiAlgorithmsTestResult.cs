@@ -1,0 +1,14 @@
+﻿namespace MetaheuristicOptimizer.Models
+{
+    public class MultiAlgorithmsTestResult
+    {
+        public string AlgorithmName { get; set; }
+        public int PopulationSize { get; set; }
+        public int Iterations { get; set; }
+        public double ResultF { get; set; }
+        public double[] ResultX { get; set; }
+        public double Mean { get; set; }
+        public double StandardDeviation { get; set; }
+        public double CoefficientOfVariation { get; set; }
+    }
+}

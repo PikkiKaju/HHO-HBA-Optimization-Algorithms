@@ -10,12 +10,14 @@ namespace MetaheuristicOptimizer.Services
 
     public class AlgorithmService
     {
-        public AlgorithmTestResponse RunSingleAlgorithm(SingleAlgorithmTestConfig request)
+        private CancellationTokenSource tokenSource = new();
+
+        public SingleAlgorithmTestResponse RunSingleAlgorithm(SingleAlgorithmTestConfig request)
         {
             IOptimizationAlgorithm algorithm = request.AlgorithmName switch
             {
-                "HawkOptimization" => new HarrisHawksOptimization(),
-                "HoneyBadger" => new HoneyBadgerAlgorithm(),
+                "HHO" => new HarrisHawksOptimization(),
+                "HBA" => new HoneyBadgerAlgorithm(),
                 _ => throw new ArgumentException($"Unknown algorithm: {request.AlgorithmName}")
             };
 
@@ -24,7 +26,7 @@ namespace MetaheuristicOptimizer.Services
                 throw new InvalidOperationException("Algorithm was not initialized.");
             }
 
-            List<TestResult> testResults = new List<TestResult>();
+            List<SingleAlgorithmTestResult> testResults = new List<SingleAlgorithmTestResult>();
 
             // Store results of each run.
             foreach (var functionName in request.FitnessFunctions)
@@ -39,7 +41,7 @@ namespace MetaheuristicOptimizer.Services
 
                 var algorithmResult = AlgorithmCalculations.RunAlgorithmTest(algorithm, function, request.PopulationSize, request.Iterations, request.Dimension);
 
-                testResults.Add(new TestResult
+                testResults.Add(new SingleAlgorithmTestResult
                 {
                     FitnessFunctionName = functionName,
                     ResultF = algorithmResult.ResultF,
@@ -49,8 +51,8 @@ namespace MetaheuristicOptimizer.Services
                     CoefficientOfVariation = algorithmResult.CoefficientOfVariation
                 });
             }
-           
-            var response = new AlgorithmTestResponse
+
+            var response = new SingleAlgorithmTestResponse
             {
                 Id = Guid.NewGuid(),
                 AlgorithmName = request.AlgorithmName,
@@ -61,21 +63,94 @@ namespace MetaheuristicOptimizer.Services
                 TestResults = testResults
             };
 
-            string json = JsonSerializer.Serialize(response, new JsonSerializerOptions { WriteIndented = true });
+            // string json = JsonSerializer.Serialize(response, new JsonSerializerOptions { WriteIndented = true });
             //FileStorage.SaveResult(json);
 
             return response;
         }
 
-        public string RunMultiAlgorithms(MultiAlgorithmsTestConfig request)
+        public MultiAlgorithmsTestResponse RunMultiAlgorithms(MultiAlgorithmsTestConfig request)
         {
-            string algorithmNames = string.Join(", ", request.AlgorithmName);
-            var response = $"Running {algorithmNames} on {request.FitnessFunction}";
+            var testResults = new List<MultiAlgorithmsTestResult>();
 
-            FileStorage.SaveResult(response);
+            var selectedFitnessFunction = FitnessFunctions.List.FirstOrDefault(f => f.Name == request.FitnessFunction);
+            if (selectedFitnessFunction == null)
+            {
+                throw new Exception($"Fitness function {request.FitnessFunction} not found.");
+            }
+
+            int[] populationSizes = { 10, 20, 40, 80 };
+            int[] iterations = { 5, 10, 20, 40, 60, 80 };
+            int[] dimensions = { 3 };
+
+            if (request.AlgorithmName == null || !request.AlgorithmName.Any())
+            {
+                throw new ArgumentException("No algorithms specified in the request.");
+            }
+
+            foreach (var algorithmName in request.AlgorithmName)
+            {            
+                IOptimizationAlgorithm algorithm = algorithmName switch
+                {
+                    "HHO" => new HarrisHawksOptimization(),
+                    "HBA" => new HoneyBadgerAlgorithm(),
+                    _ => throw new ArgumentException($"Unknown algorithm: {algorithmName}")
+                };
+
+                var bestResult = new MultiAlgorithmsTestResult
+                {
+                    AlgorithmName = algorithmName,
+                    ResultF = double.MaxValue
+                };
+
+                var resultsList = new List<double>();
+
+                foreach (int popSize in populationSizes)
+                {
+                    foreach (int iter in iterations)
+                    {
+                        foreach (int dimension in dimensions)
+                        {
+                            var result = AlgorithmCalculations.RunAlgorithmTest(algorithm, selectedFitnessFunction, popSize, iter, dimension);
+                            resultsList.Add(result.ResultF);
+
+                            if (result.ResultF < bestResult.ResultF)
+                            {
+                                bestResult = new MultiAlgorithmsTestResult
+                                {
+                                    AlgorithmName = algorithmName,
+                                    PopulationSize = popSize,
+                                    Iterations = iter,
+                                    ResultF = result.ResultF,
+                                    ResultX = result.ResultX
+                                };
+                            }
+                        }
+                    }
+                }
+                if (resultsList.Any())
+                {
+                    bestResult.Mean = resultsList.Average();
+                    bestResult.StandardDeviation = Math.Sqrt(resultsList.Average(v => Math.Pow(v - bestResult.Mean, 2)));
+                    bestResult.CoefficientOfVariation = bestResult.Mean != 0 ? bestResult.StandardDeviation / bestResult.Mean : 0;
+                }
+
+                testResults.Add(bestResult);
+            }
+
+            var response = new MultiAlgorithmsTestResponse
+            {
+                Id = Guid.NewGuid(),
+                FitnessFunctionName = request.FitnessFunction,
+                CreatedAt = DateTime.UtcNow,
+                TestResults = testResults
+            };
+
+            // string json = JsonSerializer.Serialize(response, new JsonSerializerOptions { WriteIndented = true });
+            //FileStorage.SaveResult(json);
 
             return response;
-        }
 
+        }
     }
 }

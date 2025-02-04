@@ -16,7 +16,7 @@ namespace MetaheuristicOptimizer.Controllers
             if (string.IsNullOrEmpty(request.AlgorithmName))
                 return BadRequest("AlgorithmName is required.");
 
-            AlgorithmTestResponse result = _algorithmService.RunSingleAlgorithm(request);
+            SingleAlgorithmTestResponse result = _algorithmService.RunSingleAlgorithm(request);
             return Ok(new { message = "Algorithm executed", result });
         }
 
@@ -26,7 +26,7 @@ namespace MetaheuristicOptimizer.Controllers
             if (request.AlgorithmName == null || request.AlgorithmName.Count == 0)
                 return BadRequest("AlgorithmName is required");
 
-            string result = _algorithmService.RunMultiAlgorithms(request);
+            MultiAlgorithmsTestResponse result = _algorithmService.RunMultiAlgorithms(request);
             return Ok(new { message = "Algorithm executed", result });
         }
     }

@@ -1,6 +1,6 @@
 ﻿namespace MetaheuristicOptimizer.Models
 {
-    public class TestResult
+    public class SingleAlgorithmTestResult
     {
         public string FitnessFunctionName { get; set; }
         public double ResultF { get; set; }
