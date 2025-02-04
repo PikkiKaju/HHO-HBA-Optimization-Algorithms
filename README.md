@@ -1,1 +1,0 @@
-# Zastosowania-Sztucznej-Inteligencji
