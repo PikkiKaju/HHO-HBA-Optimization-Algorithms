@@ -33,7 +33,7 @@
 //        }
 
 //        // Loads all classes that implement IOptimizationAlgorithm from the DLL in specified path.
-//        public static List<IOptimizationAlgorithm> LoadAlgorithmsFromDll(string dllDirectory = "C:\\.Projects\\Visual_Studio_cs_projects\\Zastosowania-Sztucznej-Inteligencji\\DLLs\\OptimizationAlgorithms")
+//        public static List<IOptimizationAlgorithm> LoadAlgorithmsFromDll(string dllDirectory = @".\\DLLs\\OptimizationAlgorithms")
 //        {
 //            var algorithms = new List<IOptimizationAlgorithm>();
 

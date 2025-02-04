@@ -19,7 +19,7 @@
 //            return DefaultFitnessFunctions.List;
 //        }
 
-//        public static List<IFitnessFunction> LoadFitnessFunctionsFromDll(string dllDirectory = "C:\\.Projects\\Visual_Studio_cs_projects\\Zastosowania-Sztucznej-Inteligencji\\DLLs\\FitnessFunctions")
+//        public static List<IFitnessFunction> LoadFitnessFunctionsFromDll(string dllDirectory = @".\\DLLs\\FitnessFunctions")
 //        {
 //            var functions = new List<IFitnessFunction>();
 

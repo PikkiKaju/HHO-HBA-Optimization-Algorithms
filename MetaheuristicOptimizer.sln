@@ -5,6 +5,10 @@ VisualStudioVersion = 17.10.34928.147
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetaheuristicOptimizer", "MetaheuristicOptimizer\MetaheuristicOptimizer.csproj", "{3686858F-B5D4-4E66-84A9-624A7361BF9E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FitnessFunctions", "FitnessFunctions\FitnessFunctions.csproj", "{C7FF4E9D-6EA4-4849-9DB1-F9F5FE24B1C6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OptimizationAlgorithms", "OptimizationAlgorithms\OptimizationAlgorithms.csproj", "{752BC3E3-A3D4-44DE-BE3D-41FC91BEAD3C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{3686858F-B5D4-4E66-84A9-624A7361BF9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3686858F-B5D4-4E66-84A9-624A7361BF9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3686858F-B5D4-4E66-84A9-624A7361BF9E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7FF4E9D-6EA4-4849-9DB1-F9F5FE24B1C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7FF4E9D-6EA4-4849-9DB1-F9F5FE24B1C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7FF4E9D-6EA4-4849-9DB1-F9F5FE24B1C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7FF4E9D-6EA4-4849-9DB1-F9F5FE24B1C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{752BC3E3-A3D4-44DE-BE3D-41FC91BEAD3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{752BC3E3-A3D4-44DE-BE3D-41FC91BEAD3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{752BC3E3-A3D4-44DE-BE3D-41FC91BEAD3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{752BC3E3-A3D4-44DE-BE3D-41FC91BEAD3C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
