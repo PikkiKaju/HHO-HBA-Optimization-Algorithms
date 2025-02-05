@@ -3,16 +3,19 @@
     public static class FitnessFunctions
     {
         public static List<IFitnessFunction> List { get; } = new List<IFitnessFunction>
-    {
-        new SphereFunction(),
-        new RosenbrockFunction(),
-        new RastriginFunction(),
-        new BealeFunction(),
-        new BukinFunction(),
-        new HimmelblauFunction()
-    };
+        {
+            new SphereFunction(),
+            new RosenbrockFunction(),
+            new RastriginFunction(),
+            new BealeFunction(),
+            new BukinFunction(),
+            new HimmelblauFunction()
+        };
+        public static void AddFitnessFunction(IFitnessFunction function)
+        {
+            List.Add(function);
+        }
     }
-
 
     public class SphereFunction : IFitnessFunction
     {

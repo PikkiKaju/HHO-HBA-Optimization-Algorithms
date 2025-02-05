@@ -82,6 +82,10 @@ namespace MetaheuristicOptimizer.Services
                     {
                         if (Activator.CreateInstance(type) is IFitnessFunction functionInstance)
                         {
+                            if (!FitnessFunctions.List.Contains(functionInstance))
+                            {
+                                FitnessFunctions.List.Add(functionInstance);
+                            }
                             functions.Add(functionInstance);
                         }
                     }
