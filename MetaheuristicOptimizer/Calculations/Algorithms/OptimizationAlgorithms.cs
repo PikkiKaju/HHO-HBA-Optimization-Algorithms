@@ -13,5 +13,9 @@ namespace MetaheuristicOptimizer.Calculations.Algorithms
         {
             List.Add(algorithm);
         }
+        public static IOptimizationAlgorithm GetAlgorithm(string algorithmName)
+        {
+            return List.Where(algorithm => algorithm.Name == algorithmName).FirstOrDefault();
+        }
     }
 }

@@ -17,12 +17,21 @@ namespace MetaheuristicOptimizer.Services
 
         public SingleAlgorithmTestResponse RunSingleAlgorithm(SingleAlgorithmTestConfig request)
         {
-            IOptimizationAlgorithm algorithm = request.AlgorithmName switch
+            string algorithmName = request.AlgorithmName;
+            if (request.AlgorithmName == "HHO")
+                algorithmName = "Harris Hawks Optimization";
+            else if (request.AlgorithmName == "HBA")
+                algorithmName = "Honey Badger Algorithm";
+
+            IOptimizationAlgorithm algorithm = null;
+            try
             {
-                "HHO" => new HarrisHawksOptimization(),
-                "HBA" => new HoneyBadgerAlgorithm(),
-                _ => throw new ArgumentException($"Unknown algorithm: {request.AlgorithmName}")
-            };
+                algorithm = OptimizationAlgorithms.GetAlgorithm(algorithmName);
+            }
+            catch (Exception) 
+            {
+                throw new ArgumentException($"Unknown algorithm: {algorithmName}");
+            }
 
             if (algorithm == null)
             {

@@ -4,7 +4,7 @@ namespace MetaheuristicOptimizer.Calculations.Algorithms
 {
     public class HarrisHawksOptimization : IOptimizationAlgorithm
     {
-        public string Name { get; set; } = "HarrisHawksOptimization";
+        public string Name { get; set; } = "Harris Hawks Optimization";
 
         // Property for the best individual
         public double[] XBest { get; set; } = new double[1];
