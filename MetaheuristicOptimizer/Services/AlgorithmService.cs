@@ -1,9 +1,12 @@
-﻿using MetaheuristicOptimizer.Calculations;
+﻿using MathNet.Numerics;
+using MathNet.Numerics.LinearAlgebra.Solvers;
+using MetaheuristicOptimizer.Calculations;
 using MetaheuristicOptimizer.Calculations.Algorithms;
 using MetaheuristicOptimizer.Calculations.HelperClasses;
 using MetaheuristicOptimizer.Models;
 using MetaheuristicOptimizer.Storage;
 using System.Text.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace MetaheuristicOptimizer.Services
 {
@@ -39,16 +42,36 @@ namespace MetaheuristicOptimizer.Services
                     throw new ArgumentException($"Unknown fitness function: {functionName}");
                 }
 
-                var algorithmResult = AlgorithmCalculations.RunAlgorithmTest(algorithm, function, request.PopulationSize, request.Iterations, request.Dimension);
+                // Initialize an object to store the best results for a given function test on different parameters
+                AlgorithmTestResult bestResult = new AlgorithmTestResult();
+                int bestPopulationsSize = 0;
+                int bestIterations = 0;
+
+                foreach (int popSize in request.PopulationSizes)
+                {
+                    foreach (int iter in request.Iterations)
+                    {
+                        var algorithmResult = AlgorithmCalculations.RunAlgorithmTest(algorithm, function, popSize, iter, request.Dimension);
+
+                        if (algorithmResult.ResultF < bestResult.ResultF)
+                        {
+                            bestResult = algorithmResult;
+                            bestPopulationsSize = popSize;
+                            bestIterations = iter;
+                        }
+                    }
+                }
 
                 testResults.Add(new SingleAlgorithmTestResult
                 {
                     FitnessFunctionName = functionName,
-                    ResultF = algorithmResult.ResultF,
-                    ResultX = algorithmResult.ResultX,
-                    Mean = algorithmResult.Mean,
-                    StandardDeviation = algorithmResult.StandardDeviation,
-                    CoefficientOfVariation = algorithmResult.CoefficientOfVariation
+                    PopulationSize = bestPopulationsSize,
+                    Iterations = bestIterations,
+                    ResultF = bestResult.ResultF,
+                    ResultX = bestResult.ResultX,
+                    Mean = bestResult.Mean,
+                    StandardDeviation = bestResult.StandardDeviation,
+                    CoefficientOfVariation = bestResult.CoefficientOfVariation
                 });
             }
 
@@ -56,7 +79,7 @@ namespace MetaheuristicOptimizer.Services
             {
                 Id = Guid.NewGuid(),
                 AlgorithmName = request.AlgorithmName,
-                PopulationSize = request.PopulationSize,
+                PopulationSizes = request.PopulationSizes,
                 Iterations = request.Iterations,
                 Dimension = request.Dimension,
                 CreatedAt = DateTime.UtcNow,

@@ -3,6 +3,8 @@
     public class SingleAlgorithmTestResult
     {
         public string FitnessFunctionName { get; set; }
+        public int PopulationSize { get; set; }
+        public int Iterations { get; set; }
         public double ResultF { get; set; }
         public double[] ResultX { get; set; }
         public double Mean { get; set; }
