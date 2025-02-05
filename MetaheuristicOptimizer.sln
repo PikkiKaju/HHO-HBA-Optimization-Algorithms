@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FitnessFunctions", "Fitness
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OptimizationAlgorithms", "OptimizationAlgorithms\OptimizationAlgorithms.csproj", "{752BC3E3-A3D4-44DE-BE3D-41FC91BEAD3C}"
 EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "Frontend", "Frontend\Frontend.esproj", "{B5590BA3-E992-4D47-BF14-07C062B859F5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,12 @@ Global
 		{752BC3E3-A3D4-44DE-BE3D-41FC91BEAD3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{752BC3E3-A3D4-44DE-BE3D-41FC91BEAD3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{752BC3E3-A3D4-44DE-BE3D-41FC91BEAD3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5590BA3-E992-4D47-BF14-07C062B859F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5590BA3-E992-4D47-BF14-07C062B859F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5590BA3-E992-4D47-BF14-07C062B859F5}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{B5590BA3-E992-4D47-BF14-07C062B859F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5590BA3-E992-4D47-BF14-07C062B859F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5590BA3-E992-4D47-BF14-07C062B859F5}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

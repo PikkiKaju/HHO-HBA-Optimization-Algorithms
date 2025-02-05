@@ -10,3 +10,5 @@
 /FitnessFunctions/obj
 /OptimizationAlgorithms/bin/Debug/net8.0
 /OptimizationAlgorithms/obj
+/Frontend/obj/Debug
+/MetaheuristicOptimizer/reports
