@@ -9,12 +9,26 @@ namespace MetaheuristicOptimizer.Controllers
     {
         private readonly ReportService _reportService = new();
 
-        [HttpGet("generate")]
-        public IActionResult GenerateReport()
+        [HttpGet("single")]
+        public IActionResult GenerateReportForSingleAlgorithm()
         {
             try
             {
-                string filePath = _reportService.GenerateReport();
+                string filePath = _reportService.GenerateReport(false);
+                return File(System.IO.File.ReadAllBytes(filePath), "application/pdf", Path.GetFileName(filePath));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpGet("multi")]
+        public IActionResult GenerateReportForMultiAlgorithms()
+        {
+            try
+            {
+                string filePath = _reportService.GenerateReport(true);
                 return File(System.IO.File.ReadAllBytes(filePath), "application/pdf", Path.GetFileName(filePath));
             }
             catch (Exception ex)

@@ -146,6 +146,8 @@ namespace MetaheuristicOptimizer.Services
                             var result = AlgorithmCalculations.RunAlgorithmTest(algorithm, selectedFitnessFunction, popSize, iter, dimension);
                             resultsList.Add(result.ResultF);
 
+                            FileStorage.SaveResult(result, popSize, iter, algorithm.Name, selectedFitnessFunction.Name);
+
                             if (result.ResultF < bestResult.ResultF)
                             {
                                 bestResult = new MultiAlgorithmsTestResult
