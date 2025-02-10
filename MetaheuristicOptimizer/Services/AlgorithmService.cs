@@ -62,6 +62,8 @@ namespace MetaheuristicOptimizer.Services
                     {
                         var algorithmResult = AlgorithmCalculations.RunAlgorithmTest(algorithm, function, popSize, iter, request.Dimension);
 
+                        FileStorage.SaveResult(algorithmResult, popSize, iter, algorithm.Name, function.Name);
+
                         if (algorithmResult.ResultF < bestResult.ResultF)
                         {
                             bestResult = algorithmResult;
@@ -95,8 +97,6 @@ namespace MetaheuristicOptimizer.Services
                 TestResults = testResults
             };
 
-            // string json = JsonSerializer.Serialize(response, new JsonSerializerOptions { WriteIndented = true });
-            //FileStorage.SaveResult(json);
 
             return response;
         }
@@ -166,7 +166,7 @@ namespace MetaheuristicOptimizer.Services
                     bestResult.StandardDeviation = Math.Sqrt(resultsList.Average(v => Math.Pow(v - bestResult.Mean, 2)));
                     bestResult.CoefficientOfVariation = bestResult.Mean != 0 ? bestResult.StandardDeviation / bestResult.Mean : 0;
                 }
-
+           
                 testResults.Add(bestResult);
             }
 
@@ -177,9 +177,6 @@ namespace MetaheuristicOptimizer.Services
                 CreatedAt = DateTime.UtcNow,
                 TestResults = testResults
             };
-
-            // string json = JsonSerializer.Serialize(response, new JsonSerializerOptions { WriteIndented = true });
-            //FileStorage.SaveResult(json);
 
             return response;
 

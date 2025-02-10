@@ -15,7 +15,7 @@
 
   <ItemGroup>
     <Folder Include="Uploads\Functions\" />
-    <Folder Include="Uploads\Alorithms\" />
+    <Folder Include="Uploads\Algorithms\" />
   </ItemGroup>
 
 </Project>
