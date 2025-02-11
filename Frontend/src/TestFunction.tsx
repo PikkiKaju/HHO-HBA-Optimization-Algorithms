@@ -19,10 +19,12 @@ const TestPage: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        axios.get("https://localhost:7178/api/update/functions"),
-        axios.get("https://localhost:7178/api/update/algorithms"),
-        
-        setOptions(optionsResponse.data);
+        const [functionsResponse, algorithmsResponse] = await Promise.all([
+          axios.get("https://localhost:7178/api/update/functions"),
+          axios.get("https://localhost:7178/api/update/algorithms"),
+        ]);
+  
+        setOptions(functionsResponse.data);
         setAlgorithms(algorithmsResponse.data);
       } catch (error) {
         console.error("Error fetching data from backend:", error);
@@ -30,6 +32,7 @@ const TestPage: React.FC = () => {
     };
     fetchData();
   }, []);
+  
 
   const handleAlgorithmChange = (option: string) => {
     setIsRunning(true);
