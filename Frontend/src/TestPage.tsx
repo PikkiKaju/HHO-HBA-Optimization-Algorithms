@@ -22,14 +22,14 @@ const TestPage: React.FC = () => {
     useEffect(() => {
         const fetchOptionsAndAlgorithms = async () => {
             try {
-                const [optionsRes, algorithmsRes] = await Promise.all([
-                    axios.get("https://localhost:7178/api/options"),
-                    axios.get("https://localhost:7178/api/algorithms"),
+                const [functionsRes, algorithmsRes] = await Promise.all([
+                    axios.get("https://localhost:7178/api/update/functions"),
+                    axios.get("https://localhost:7178/api/update/algorithms"),
                 ]);
-                setOptions(optionsRes.data);
+                setOptions(functionsRes.data);
                 setAlgorithms(algorithmsRes.data);
             } catch (error) {
-                console.error("Error fetching options and algorithms:", error);
+                console.error("Error fetching functions and algorithms:", error);
             }
         };
         fetchOptionsAndAlgorithms();
