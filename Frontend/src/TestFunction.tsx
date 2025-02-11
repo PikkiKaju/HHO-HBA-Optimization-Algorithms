@@ -23,7 +23,7 @@ const TestPage: React.FC = () => {
           axios.get("https://localhost:7178/api/update/functions"),
           axios.get("https://localhost:7178/api/update/algorithms"),
         ]);
-  
+
         setOptions(functionsResponse.data);
         setAlgorithms(algorithmsResponse.data);
       } catch (error) {
@@ -32,7 +32,6 @@ const TestPage: React.FC = () => {
     };
     fetchData();
   }, []);
-  
 
   const handleAlgorithmChange = (option: string) => {
     setIsRunning(true);
@@ -53,23 +52,35 @@ const TestPage: React.FC = () => {
 
   const handleSubmit = async () => {
     try {
-      const response = await axios.post("https://localhost:7178/api/algorithm/run-single", formData, {
-        headers: { "Content-Type": "application/json" },
-      });
+      const response = await axios.post(
+        "https://localhost:7178/api/algorithm/run-multi",
+        formData,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
       console.log("✅ Response:", response.data);
     } catch (error) {
-      console.error("❌ Error:", error.response ? error.response.data : error.message);
+      console.error(
+        "❌ Error:",
+        error.response ? error.response.data : error.message
+      );
     }
     setIsRunning(false);
   };
 
   const handleGenerateReport = async () => {
     try {
-      const response = await axios.get("https://localhost:7178/api/report/multi", {
-        responseType: "blob",
-      });
+      const response = await axios.get(
+        "https://localhost:7178/api/report/multi",
+        {
+          responseType: "blob",
+        }
+      );
 
-      const fileURL = window.URL.createObjectURL(new Blob([response.data], { type: "application/pdf" }));
+      const fileURL = window.URL.createObjectURL(
+        new Blob([response.data], { type: "application/pdf" })
+      );
       const link = document.createElement("a");
       link.href = fileURL;
       link.setAttribute("download", "report.pdf");
@@ -83,7 +94,16 @@ const TestPage: React.FC = () => {
   };
 
   return (
-    <div style={{ position: "relative", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+    <div
+      style={{
+        position: "relative",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+      }}
+    >
       <button
         onClick={() => setStop(true)}
         style={{
@@ -107,7 +127,12 @@ const TestPage: React.FC = () => {
       <div>
         {algorithms.map((algorithm) => (
           <label key={algorithm} style={{ display: "block", margin: "5px 0" }}>
-            <input type="checkbox" value={algorithm} checked={formData.AlgorithmName.includes(algorithm)} onChange={() => handleAlgorithmChange(algorithm)} />
+            <input
+              type="checkbox"
+              value={algorithm}
+              checked={formData.AlgorithmName.includes(algorithm)}
+              onChange={() => handleAlgorithmChange(algorithm)}
+            />
             {algorithm}
           </label>
         ))}
@@ -117,7 +142,13 @@ const TestPage: React.FC = () => {
       <div>
         {options.map((option) => (
           <label key={option} style={{ display: "block", margin: "5px 0" }}>
-            <input type="radio" name="FitnessFunction" value={option} checked={formData.FitnessFunction === option} onChange={handleFunctionChange} />
+            <input
+              type="radio"
+              name="FitnessFunction"
+              value={option}
+              checked={formData.FitnessFunction === option}
+              onChange={handleFunctionChange}
+            />
             {option}
           </label>
         ))}
@@ -126,7 +157,18 @@ const TestPage: React.FC = () => {
       <button onClick={handleSubmit}>Start Test</button>
       <button onClick={() => navigate("/")}>Go Back</button>
 
-      <button onClick={handleGenerateReport} disabled={isRunning} style={{ marginTop: "20px", padding: "10px 20px", backgroundColor: isRunning ? "gray" : "blue", color: "white", border: "none", cursor: isRunning ? "not-allowed" : "pointer" }}>
+      <button
+        onClick={handleGenerateReport}
+        disabled={isRunning}
+        style={{
+          marginTop: "20px",
+          padding: "10px 20px",
+          backgroundColor: isRunning ? "gray" : "blue",
+          color: "white",
+          border: "none",
+          cursor: isRunning ? "not-allowed" : "pointer",
+        }}
+      >
         Generate Report
       </button>
     </div>
