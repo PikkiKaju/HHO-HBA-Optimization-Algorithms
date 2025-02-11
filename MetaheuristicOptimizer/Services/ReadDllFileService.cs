@@ -21,7 +21,7 @@ namespace MetaheuristicOptimizer.Services
 
             if (dllFiles.Count() == 0)
             {
-                throw new FileNotFoundException($"The Algorithms DLL directory does not contain any files: {dllDirectory}");
+                return null;
             }
 
             foreach (var dll in dllFiles)
@@ -64,7 +64,7 @@ namespace MetaheuristicOptimizer.Services
 
             if (dllFiles.Count() == 0)
             {
-                throw new FileNotFoundException($"The Functions DLL directory does not contain any files: {dllDirectory}");
+                return null;
             }
 
             foreach (string dll in dllFiles)
@@ -82,10 +82,6 @@ namespace MetaheuristicOptimizer.Services
                     {
                         if (Activator.CreateInstance(type) is IFitnessFunction functionInstance)
                         {
-                            if (!FitnessFunctions.List.Contains(functionInstance))
-                            {
-                                FitnessFunctions.List.Add(functionInstance);
-                            }
                             functions.Add(functionInstance);
                         }
                     }

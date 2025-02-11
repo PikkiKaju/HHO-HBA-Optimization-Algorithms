@@ -8,18 +8,18 @@ namespace MetaheuristicOptimizer.Controllers
     [Route("api/upload")]
     public class DllFilesController : ControllerBase
     {
-        private readonly AlgorithmService _algorithmService = new();
+        private readonly FileUploadService _fileUploadService = new();
 
         [HttpPost("function")]
         public IActionResult UploadFunctionFile(IFormFile file)
         {
-            return Ok(new FileUploadService().UploadFunction(file));
+            return Ok(_fileUploadService.UploadFunction(file));
         }
         
         [HttpPost("algorithm")]
         public IActionResult UploadAlgorithmFile(IFormFile file)
         {
-            return Ok(new FileUploadService().UploadAlgorithm(file));
+            return Ok(_fileUploadService.UploadAlgorithm(file));
         }
     }
 }

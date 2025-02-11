@@ -43,10 +43,10 @@ namespace MetaheuristicOptimizer.Services
             // Store results of each run.
             foreach (var functionName in request.FitnessFunctions)
             {
-                IFitnessFunction function = FitnessFunctions.List
+                var fitnessFunction = FitnessFunctions.List
                     .FirstOrDefault(f => f.Name.Equals(functionName, StringComparison.OrdinalIgnoreCase));
 
-                if (function == null)
+                if (fitnessFunction == null)
                 {
                     throw new ArgumentException($"Unknown fitness function: {functionName}");
                 }
@@ -60,9 +60,9 @@ namespace MetaheuristicOptimizer.Services
                 {
                     foreach (int iter in request.Iterations)
                     {
-                        var algorithmResult = AlgorithmCalculations.RunAlgorithmTest(algorithm, function, popSize, iter, request.Dimension);
+                        var algorithmResult = AlgorithmCalculations.RunAlgorithmTest(algorithm, fitnessFunction, popSize, iter, request.Dimension);
 
-                        FileStorage.SaveResult(algorithmResult, popSize, iter, algorithm.Name, function.Name);
+                        FileStorage.SaveResult(algorithmResult, popSize, iter, algorithm.Name, fitnessFunction.Name);
 
                         if (algorithmResult.ResultF < bestResult.ResultF)
                         {
@@ -105,8 +105,8 @@ namespace MetaheuristicOptimizer.Services
         {
             var testResults = new List<MultiAlgorithmsTestResult>();
 
-            var selectedFitnessFunction = FitnessFunctions.List.FirstOrDefault(f => f.Name == request.FitnessFunction);
-            if (selectedFitnessFunction == null)
+            var fitnessFunction = FitnessFunctions.List.FirstOrDefault(f => f.Name == request.FitnessFunction);
+            if (fitnessFunction == null)
             {
                 throw new Exception($"Fitness function {request.FitnessFunction} not found.");
             }
@@ -120,18 +120,32 @@ namespace MetaheuristicOptimizer.Services
                 throw new ArgumentException("No algorithms specified in the request.");
             }
 
-            foreach (var algorithmName in request.AlgorithmName)
-            {            
-                IOptimizationAlgorithm algorithm = algorithmName switch
+            foreach (var name in request.AlgorithmName)
+            {
+                string algorithmName = name;
+                if (name == "HHO")
+                    algorithmName = "Harris Hawks Optimization";
+                else if (name == "HBA")
+                    algorithmName = "Honey Badger Algorithm";
+
+                IOptimizationAlgorithm algorithm = null;
+                try
                 {
-                    "HHO" => new HarrisHawksOptimization(),
-                    "HBA" => new HoneyBadgerAlgorithm(),
-                    _ => throw new ArgumentException($"Unknown algorithm: {algorithmName}")
-                };
+                    algorithm = OptimizationAlgorithms.GetAlgorithm(algorithmName);
+                }
+                catch (Exception)
+                {
+                    throw new ArgumentException($"Unknown algorithm: {algorithmName}");
+                }
+
+                if (algorithm == null)
+                {
+                    throw new InvalidOperationException("Algorithm was not initialized.");
+                }
 
                 var bestResult = new MultiAlgorithmsTestResult
                 {
-                    AlgorithmName = algorithmName,
+                    AlgorithmName = name,
                     ResultF = double.MaxValue
                 };
 
@@ -143,16 +157,16 @@ namespace MetaheuristicOptimizer.Services
                     {
                         foreach (int dimension in dimensions)
                         {
-                            var result = AlgorithmCalculations.RunAlgorithmTest(algorithm, selectedFitnessFunction, popSize, iter, dimension);
+                            var result = AlgorithmCalculations.RunAlgorithmTest(algorithm, fitnessFunction, popSize, iter, dimension);
                             resultsList.Add(result.ResultF);
 
-                            FileStorage.SaveResult(result, popSize, iter, algorithm.Name, selectedFitnessFunction.Name);
+                            FileStorage.SaveResult(result, popSize, iter, algorithm.Name, fitnessFunction.Name);
 
                             if (result.ResultF < bestResult.ResultF)
                             {
                                 bestResult = new MultiAlgorithmsTestResult
                                 {
-                                    AlgorithmName = algorithmName,
+                                    AlgorithmName = name,
                                     PopulationSize = popSize,
                                     Iterations = iter,
                                     ResultF = result.ResultF,
