@@ -1,75 +1,86 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-interface AlgorithmRequest {
-    id: number;
-    algorithmName: string;
-    populationSize: number;
-    iterations: number;
-    dimension: number;
-    fitnessFunctions: string[];
-    createdAt: string;
-}
-
-
 const TestPage: React.FC = () => {
   const navigate = useNavigate();
-  const [stop, setStop] = useState(false); // Stop state
+  const [stop, setStop] = useState(false);
+  const [isRunning, setIsRunning] = useState(false);
+  const [options, setOptions] = useState<string[]>([]);
+  const [algorithms, setAlgorithms] = useState<string[]>([]);
 
   const [formData, setFormData] = useState({
     id: 1,
-    FitnessFunction: "", // Single function (backend expects string)
-    AlgorithmName: [] as string[], // Multiple algorithms (backend expects List<string>)
+    FitnessFunction: "",
+    AlgorithmName: [] as string[],
     createdAt: new Date().toISOString(),
   });
 
-  const options = ["Rastrigin", "Rosenbrock", "Sphere", "Beale", "Bukin", "Himmelblau"];
-  const algorithms = ["HBA", "HHO"];
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const optionsResponse = await axios.get("https://localhost:7178/api/options");
+        const algorithmsResponse = await axios.get("https://localhost:7178/api/algorithms");
+        
+        setOptions(optionsResponse.data);
+        setAlgorithms(algorithmsResponse.data);
+      } catch (error) {
+        console.error("Error fetching data from backend:", error);
+      }
+    };
+    fetchData();
+  }, []);
 
-  // Handle multiple algorithm selection (checkboxes)
   const handleAlgorithmChange = (option: string) => {
+    setIsRunning(true);
     setFormData((prev) => ({
       ...prev,
       AlgorithmName: prev.AlgorithmName.includes(option)
-        ? prev.AlgorithmName.filter((item) => item !== option) // Uncheck
-        : [...prev.AlgorithmName, option], // Check
+        ? prev.AlgorithmName.filter((item) => item !== option)
+        : [...prev.AlgorithmName, option],
     }));
   };
 
-  // Handle single fitness function selection (radio buttons)
   const handleFunctionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
       ...prev,
-      FitnessFunction: e.target.value, // Backend expects a string
+      FitnessFunction: e.target.value,
     }));
   };
-    
-    const handleSubmit = async (e: Event) => {
-        try {
-            const response = await axios.post(
-                "https://localhost:7178/api/algorithm/run-multi",
-                formData,
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
 
-            console.log("✅ Response:", response.data);
-        } catch (error: any) {
-            // Type the error as 'any' or a more specific error type if available
-            console.error(
-                "❌ Error:",
-                error.response ? error.response.data : error.message
-            );
-        }
-    };
+  const handleSubmit = async () => {
+    try {
+      const response = await axios.post("https://localhost:7178/api/algorithm/run-single", formData, {
+        headers: { "Content-Type": "application/json" },
+      });
+      console.log("✅ Response:", response.data);
+    } catch (error) {
+      console.error("❌ Error:", error.response ? error.response.data : error.message);
+    }
+    setIsRunning(false);
+  };
+
+  const handleGenerateReport = async () => {
+    try {
+      const response = await axios.get("https://localhost:7178/api/report/multi", {
+        responseType: "blob",
+      });
+
+      const fileURL = window.URL.createObjectURL(new Blob([response.data], { type: "application/pdf" }));
+      const link = document.createElement("a");
+      link.href = fileURL;
+      link.setAttribute("download", "report.pdf");
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
+      window.URL.revokeObjectURL(fileURL);
+    } catch (error) {
+      console.error("Error downloading the report:", error);
+    }
+  };
 
   return (
     <div style={{ position: "relative", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-      {/* Stop Button */}
       <button
         onClick={() => setStop(true)}
         style={{
@@ -89,32 +100,32 @@ const TestPage: React.FC = () => {
 
       <h1>Test by function</h1>
 
-        {/* Multiple Algorithm Selection */}
-        <p>Pick Algorithms:</p>
-        <div>
+      <p>Pick Algorithms:</p>
+      <div>
         {algorithms.map((algorithm) => (
-            <label key={algorithm} style={{ display: "block", margin: "5px 0" }}>
+          <label key={algorithm} style={{ display: "block", margin: "5px 0" }}>
             <input type="checkbox" value={algorithm} checked={formData.AlgorithmName.includes(algorithm)} onChange={() => handleAlgorithmChange(algorithm)} />
             {algorithm}
-            </label>
+          </label>
         ))}
-        </div>
+      </div>
 
-        {/* Single Fitness Function Selection */}
-        <p>Pick a function:</p>
-        <div>
+      <p>Pick a function:</p>
+      <div>
         {options.map((option) => (
-            <label key={option} style={{ display: "block", margin: "5px 0" }}>
+          <label key={option} style={{ display: "block", margin: "5px 0" }}>
             <input type="radio" name="FitnessFunction" value={option} checked={formData.FitnessFunction === option} onChange={handleFunctionChange} />
             {option}
-            </label>
+          </label>
         ))}
-        </div>
+      </div>
 
-        {/* Buttons */}
-        <button onClick={() => handleSubmit()}>Start Test</button>
+      <button onClick={handleSubmit}>Start Test</button>
+      <button onClick={() => navigate("/")}>Go Back</button>
 
-        <button onClick={() => navigate("/")}>Go Back</button>
+      <button onClick={handleGenerateReport} disabled={isRunning} style={{ marginTop: "20px", padding: "10px 20px", backgroundColor: isRunning ? "gray" : "blue", color: "white", border: "none", cursor: isRunning ? "not-allowed" : "pointer" }}>
+        Generate Report
+      </button>
     </div>
   );
 };
