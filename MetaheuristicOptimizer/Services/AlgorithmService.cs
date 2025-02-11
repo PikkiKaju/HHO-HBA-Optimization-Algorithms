@@ -18,10 +18,6 @@ namespace MetaheuristicOptimizer.Services
         public SingleAlgorithmTestResponse RunSingleAlgorithm(SingleAlgorithmTestConfig request)
         {
             string algorithmName = request.AlgorithmName;
-            if (request.AlgorithmName == "HHO")
-                algorithmName = "Harris Hawks Optimization";
-            else if (request.AlgorithmName == "HBA")
-                algorithmName = "Honey Badger Algorithm";
 
             IOptimizationAlgorithm algorithm = null;
             try
@@ -120,14 +116,8 @@ namespace MetaheuristicOptimizer.Services
                 throw new ArgumentException("No algorithms specified in the request.");
             }
 
-            foreach (var name in request.AlgorithmName)
+            foreach (var algorithmName in request.AlgorithmName)
             {
-                string algorithmName = name;
-                if (name == "HHO")
-                    algorithmName = "Harris Hawks Optimization";
-                else if (name == "HBA")
-                    algorithmName = "Honey Badger Algorithm";
-
                 IOptimizationAlgorithm algorithm = null;
                 try
                 {
@@ -145,7 +135,7 @@ namespace MetaheuristicOptimizer.Services
 
                 var bestResult = new MultiAlgorithmsTestResult
                 {
-                    AlgorithmName = name,
+                    AlgorithmName = algorithmName,
                     ResultF = double.MaxValue
                 };
 
@@ -166,7 +156,7 @@ namespace MetaheuristicOptimizer.Services
                             {
                                 bestResult = new MultiAlgorithmsTestResult
                                 {
-                                    AlgorithmName = name,
+                                    AlgorithmName = algorithmName,
                                     PopulationSize = popSize,
                                     Iterations = iter,
                                     ResultF = result.ResultF,

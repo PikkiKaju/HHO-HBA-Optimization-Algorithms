@@ -9,13 +9,13 @@
             string extension = Path.GetExtension(file.FileName);
             if (!validExtensions.Contains(extension))
             {
-                return $"Extension is not valid ({string.Join(".", validExtensions)})";
+                return $"Error: Extension is not valid ({string.Join(".", validExtensions)})";
             }
             // file size
             long size = file.Length;
             if (size > (1 * 1024 * 1024))
             {
-                return "Maximum size can be 1mb";
+                return "Error: Maximum size can be 1mb";
             }
             // name changing
             string fileName = Guid.NewGuid().ToString() + extension;
@@ -32,13 +32,13 @@
             string extension = Path.GetExtension(file.FileName);
             if (!validExtensions.Contains(extension))
             {
-                return $"Extension is not valid ({string.Join(".", validExtensions)})";
+                return $"Error: Extension is not valid ({string.Join(".", validExtensions)})";
             }
             // file size
             long size = file.Length;
             if (size > (1 * 1024 * 1024))
             {
-                return "Maximum size can be 1mb";
+                return "Error: Maximum size can be 1mb";
             }
             // name changing
             string fileName = Guid.NewGuid().ToString() + extension;

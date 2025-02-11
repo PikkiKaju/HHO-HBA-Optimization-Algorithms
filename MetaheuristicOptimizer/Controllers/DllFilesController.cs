@@ -13,13 +13,15 @@ namespace MetaheuristicOptimizer.Controllers
         [HttpPost("function")]
         public IActionResult UploadFunctionFile(IFormFile file)
         {
-            return Ok(_fileUploadService.UploadFunction(file));
+            string result = _fileUploadService.UploadFunction(file);
+            return result.StartsWith("Error") ? BadRequest(result) : Ok(result);
         }
         
         [HttpPost("algorithm")]
         public IActionResult UploadAlgorithmFile(IFormFile file)
         {
-            return Ok(_fileUploadService.UploadAlgorithm(file));
+            string result = _fileUploadService.UploadAlgorithm(file);
+            return result.StartsWith("Error") ? BadRequest(result) : Ok(result);
         }
     }
 }
