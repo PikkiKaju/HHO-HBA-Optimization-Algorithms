@@ -19,8 +19,8 @@ const TestPage: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const optionsResponse = await axios.get("https://localhost:7178/api/options");
-        const algorithmsResponse = await axios.get("https://localhost:7178/api/algorithms");
+        axios.get("https://localhost:7178/api/update/functions"),
+        axios.get("https://localhost:7178/api/update/algorithms"),
         
         setOptions(optionsResponse.data);
         setAlgorithms(algorithmsResponse.data);
