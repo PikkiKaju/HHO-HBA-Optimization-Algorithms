@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import TestPage from "./TestFunction";
 
 const CreateReportPage: React.FC = () => {
     const navigate = useNavigate();
@@ -89,4 +88,4 @@ const CreateReportPage: React.FC = () => {
     );
 };
 
-export default TestPage;
+export default CreateReportPage;
