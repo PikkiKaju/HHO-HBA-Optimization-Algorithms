@@ -6,6 +6,8 @@ const TestPage: React.FC = () => {
     const navigate = useNavigate();
     const [stop, setStop] = useState(false);
     const [isRunning, setIsRunning] = useState(false);
+    const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+    const [reportData, setReportData] = useState<string>("");
     const [options, setOptions] = useState<string[]>([]);
     const [algorithms, setAlgorithms] = useState<string[]>([]);
 
@@ -20,7 +22,7 @@ const TestPage: React.FC = () => {
     const [formData, setFormData] = useState({
         id: 1,
         algorithmName: "",
-        populationSizes: generateRange(10, 100, 10),
+        PopulationSizes: generateRange(10, 100, 10),
         iterations: generateRange(5, 50, 5),
         dimension: 1,
         fitnessFunctions: [] as string[],
@@ -44,30 +46,30 @@ const TestPage: React.FC = () => {
     }, []);
 
     const handleGenerateReport = async () => {
+        setIsGeneratingReport(true);
         try {
             const response = await axios.get("https://localhost:7178/api/report/multi", {
-                responseType: "blob",
+                responseType: "text",
             });
-
-            const fileURL = window.URL.createObjectURL(new Blob([response.data], { type: "application/pdf" }));
-            const link = document.createElement("a");
-            link.href = fileURL;
-            link.setAttribute("download", "report.pdf");
-            document.body.appendChild(link);
-            link.click();
-            link.parentNode?.removeChild(link);
-            window.URL.revokeObjectURL(fileURL);
+            setReportData(response.data);
         } catch (error) {
-            console.error("Error downloading the report:", error);
+            console.error("Error fetching the report:", error);
         }
+        setIsGeneratingReport(false);
     };
 
     return (
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", height: "100vh" }}>
             <h1>Test by function</h1>
-            <button onClick={handleGenerateReport} disabled={isRunning} style={{ marginTop: "20px", padding: "10px 20px", backgroundColor: isRunning ? "gray" : "blue", color: "white", border: "none", cursor: isRunning ? "not-allowed" : "pointer" }}>
-                Generate Report
+            <button onClick={handleGenerateReport} disabled={isGeneratingReport || isRunning} style={{ marginTop: "20px", padding: "10px 20px", backgroundColor: (isGeneratingReport || isRunning) ? "gray" : "blue", color: "white", border: "none", cursor: (isGeneratingReport || isRunning) ? "not-allowed" : "pointer" }}>
+                {isGeneratingReport ? "Generating..." : "Generate Report"}
             </button>
+            {reportData && (
+                <div style={{ marginTop: "20px", padding: "10px", border: "1px solid #ccc", width: "80%", overflow: "auto" }}>
+                    <h2>Report Output</h2>
+                    <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>{reportData}</pre>
+                </div>
+            )}
         </div>
     );
 };
