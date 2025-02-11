@@ -1,39 +1,53 @@
-import React, { useState } from "react";
-import { UploadCloud } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react'; 
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { useEffect } from 'react';
 
-const DllUploader: React.FC = () => {
-  const [file, setFile] = useState<File | null>(null);
+const CreateReportPage: React.FC = () => {
   const navigate = useNavigate();
+  const [message, setMessage] = useState('');
+  const [file, setFile] = useState<File | null>(null);
+
+  useEffect(() => {
+    axios.get('https://localhost:7178/api/report/generate')
+      .then(response => setMessage(response.data.message))
+      .catch(error => console.error('Error:', error));
+  }, []);
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = event.target.files?.[0];
-    if (selectedFile && selectedFile.name.endsWith(".dll")) {
-      setFile(selectedFile);
-    } else {
-      alert("Please upload a valid .dll file");
-      setFile(null);
+    if (event.target.files) {
+      setFile(event.target.files[0]);
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!file) {
+      alert("Please select a file first");
+      return;
+    }
+    
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await axios.post("https://localhost:7178/api/upload/dll", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log("✅ Upload Success:", response.data);
+    } catch (error) {
+      console.error("❌ Upload Error:", error);
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="p-6 shadow-lg w-96 text-center bg-white rounded-lg">
-        <h2 className="text-xl font-bold mb-4">Please upload your .dll file</h2>
-        <input
-          type="file"
-          accept=".dll"
-          className="hidden"
-          id="file-upload"
-          onChange={handleFileChange}
-        />
-        <label htmlFor="file-upload" className="cursor-pointer inline-block p-2 border border-gray-300 rounded-lg bg-gray-200 hover:bg-gray-300">
-          <UploadCloud size={20} className="inline mr-2" /> Upload .dll File
-        </label>
-        {file && <p className="mt-3 text-sm text-gray-600">Selected: {file.name}</p>}
-        <button onClick={() => navigate("/")}>Go Back</button>
-      </div>
+    <div>
+      {message}
+      <input type="file" accept=".dll" onChange={handleFileChange} />
+      <button onClick={handleUpload}>Upload DLL</button>
     </div>
   );
 };
 
-export default DllUploader;
+export default CreateReportPage;
